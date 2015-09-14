@@ -37,6 +37,8 @@ class Ui {
 	int historyEnd;
 	int maxHistoryCount;
 	int currentHistory;
+	struct termios oldTerminalSettings;
+	struct termios newTerminalSettings;
 	int incr(int x);
 	int decr(int x);
 public:

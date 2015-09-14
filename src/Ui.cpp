@@ -14,10 +14,14 @@ Ui::Ui() {
 	historyStart = 0;
 	historyEnd = 0;
 	currentHistory = 0;
+	tcgetattr(0, &oldTerminalSettings);
+	newTerminalSettings = oldTerminalSettings;
+	newTerminalSettings.c_lflag &= (~ICANON & ~ECHO);
 }
 
 Ui::~Ui() {
 	delete[] history;
+	tcsetattr(0, TCSANOW, &oldTerminalSettings);
 }
 
 int Ui::incr(int x) {
@@ -55,11 +59,7 @@ int Ui::getInputLine(string **input) {
 	displayPrompt();
 
 	//Stop input buffering of terminal
-	struct termios oldT, newT;
-	tcgetattr(0, &oldT);
-	newT = oldT;
-	newT.c_lflag &= (~ICANON & ~ECHO);
-	tcsetattr(0, TCSANOW, &newT);
+	tcsetattr(0, TCSANOW, &newTerminalSettings);
 
 	//Read input character by character
 	while(1) {
@@ -150,7 +150,7 @@ int Ui::getInputLine(string **input) {
 	buffer = history[currentHistory];
 
 	//Restore terminal settings
-	tcsetattr(0, TCSANOW, &oldT);
+	tcsetattr(0, TCSANOW, &oldTerminalSettings);
 	cout << endl;
 	return totalArguments;
 

@@ -10,21 +10,38 @@
 
 
 #include <string>
+#include <iostream>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/socket.h>
+#include "Ui.h"
 
 using namespace std;
+
+#define SOCK_CREATE_ERROR -1
+#define SOCK_BIND_ERROR -2
+#define SOCK_ACCEPT_ERROR -3
+#define SOCK_READ_ERROR -4
+#define SOCK_WRITE_ERROR -5
+#define SOCK_CONNECT_ERROR -6
 
 struct Node {
 	string nodeIp;
 	string nodeId;
 	string port;
 	void (*callback)(string);
-	bool isLocalNodeInitialized;
+	int serverSockFd;
+	bool isNodeInitialized;
 	Node() {
+		serverSockFd = -1;
 		callback = NULL;
-		isLocalNodeInitialized = false;
+		isNodeInitialized = false;
 	}
 	int setNode(string nodeIp, string port, void (*callback)(string));
 };
 
+static Node localNode;
+static Ui ui;
 
 #endif /* HEADER_GLOBAL_H_ */

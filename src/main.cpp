@@ -5,7 +5,6 @@
  *      Author: harshit
  */
 
-#include "../header/Ui.h"
 #include "../header/global.h"
 #include "../header/Server.h"
 #include "../header/Client.h"
@@ -19,7 +18,6 @@ void getFromPastry(string message) {
 int main(void) {
 
 	//Set up local node
-	Node localNode;
 	string ip = "127.0.0.1";
 	string port = "3000";
 	localNode.setNode(ip, port, getFromPastry);
@@ -27,7 +25,6 @@ int main(void) {
 	//Set up app and Ui
 	string appName = "pastry";
 	string delim = "$";
-	Ui ui;
 	ui.init(appName, delim, GOLD);
 
 	//Create client & server objects
@@ -43,7 +40,7 @@ int main(void) {
 	while(1) {
 		totalArguments = ui.getInputLine(&arguments);
 		string response = client.send(key, message);
-		cout << response << endl;
+		cout << response << "Hello" << endl;
 	}
 
 	pthread_join(serverId, NULL);

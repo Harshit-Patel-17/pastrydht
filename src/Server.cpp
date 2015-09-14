@@ -28,6 +28,7 @@ void *serverRunner(void *arg) {
 
 	//Create TCP socket
 	sockFd = socket(AF_INET, SOCK_STREAM, 0);
+	localNode.serverSockFd = sockFd; //Register server socket
 	if(sockFd < 0) {
 		*retVal = SOCK_CREATE_ERROR;
 		pthread_exit((void *) retVal);
@@ -86,6 +87,7 @@ void *serverRunner(void *arg) {
 		close(newSockFd);
 	}
 	close(sockFd);
+	localNode.serverSockFd = -1; //Server socket closed
 	delete retVal;
 	pthread_exit(0);
 

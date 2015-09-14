@@ -18,12 +18,6 @@
 #include <unistd.h>
 #include "global.h"
 
-#define SOCK_CREATE_ERROR -1
-#define SOCK_BIND_ERROR -2
-#define SOCK_ACCEPT_ERROR -3
-#define SOCK_READ_ERROR -4
-#define SOCK_WRITE_ERROR -5
-
 using namespace std;
 
 class Server {

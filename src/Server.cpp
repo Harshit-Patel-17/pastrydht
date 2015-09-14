@@ -25,6 +25,7 @@ void *serverRunner(void *arg) {
 	const unsigned int bufferSize = 1024;
 	char buffer[bufferSize];
 	struct sockaddr_in serverAddr, clientAddr;
+	Packet packet;
 
 	//Create TCP socket
 	sockFd = socket(AF_INET, SOCK_STREAM, 0);
@@ -63,16 +64,18 @@ void *serverRunner(void *arg) {
 
 		//Start communicating
 		bzero(buffer, bufferSize);
-		count = read(newSockFd, buffer, bufferSize-1);
+		count = read(newSockFd, buffer, bufferSize);
 		if(count < 0) {
 			*retVal = SOCK_READ_ERROR;
 			close(sockFd);
 			close(newSockFd);
 			pthread_exit((void *) retVal);
 		}
+		packet.deserialize(buffer);
+		packet.print();
 
-		string message = buffer;
-		node->callback(message);
+		//string message = packet.message;
+		//node->callback(message);
 
 		bzero(buffer, bufferSize);
 		strcpy(buffer, "I got your message");

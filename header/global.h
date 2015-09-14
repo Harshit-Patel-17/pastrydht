@@ -41,7 +41,26 @@ struct Node {
 	int setNode(string nodeIp, string port, void (*callback)(string));
 };
 
-static Node localNode;
-static Ui ui;
+enum message_type {APP_DATA, ROUTING_TABLE, CONTROL_DATA};
 
+struct Header {
+	string srcNodeId;
+	string key;
+	message_type type;
+	unsigned int messageLength;
+};
+
+struct Packet {
+	Header header;
+	string message;
+	void print();
+	string serialize();
+	int deserialize(string packet);
+};
+
+extern Node localNode;
+extern Ui ui;
+extern int keyLengthInBits;
+extern int b;
+extern int keyLength;
 #endif /* HEADER_GLOBAL_H_ */

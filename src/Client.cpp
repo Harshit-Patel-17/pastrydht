@@ -57,13 +57,22 @@ int Client::send(string ip, string port, string message, string *response) {
 
 }
 
-string Client::send(string key, string message) {
+string Client::send(string key, string message, message_type type) {
 
 	//Todo: Write logic to obtain destination nodeIp from key using Routing Table
 
 	string response;
 	string ip = "127.0.0.1"; //Test Ip
 	string port = "3000"; //Test Port
+
+	//Construct a packet to be sent
+	Packet packet;
+	packet.header.srcNodeId = localNode.nodeId;
+	packet.header.key = key;
+	packet.header.type = type;
+	packet.header.messageLength = message.length();
+	packet.message = message;
+	message = packet.serialize();
 	send(ip, port, message, &response);
 
 	return response;

@@ -35,12 +35,12 @@ int main(void) {
 
 	int totalArguments;
 	string *arguments;
-	string key = "Something";
-	string message = "This should be printed on screen.";
+	string key = "aaaaaaaa";
+	string message = "Hello, How are you?";
 	while(1) {
 		totalArguments = ui.getInputLine(&arguments);
 		string response = client.send(key, message);
-		cout << response << "Hello" << endl;
+		cout << endl << response << endl;
 	}
 
 	pthread_join(serverId, NULL);

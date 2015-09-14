@@ -27,7 +27,7 @@ public:
 	Client();
 	virtual ~Client();
 
-	string send(string key, string message);
+	string send(string key, string message, message_type type = APP_DATA);
 };
 
 #endif /* HEADER_CLIENT_H_ */

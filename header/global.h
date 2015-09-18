@@ -16,6 +16,7 @@
 #include <signal.h>
 #include <math.h>
 #include <sys/socket.h>
+#include "StateTable.h"
 #include "Ui.h"
 
 using namespace std;
@@ -31,6 +32,7 @@ struct Node {
 	string nodeIp;
 	string nodeId;
 	string port;
+	StateTable stateTable;
 	void (*callback)(string);
 	int serverSockFd;
 	bool isNodeInitialized;

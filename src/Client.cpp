@@ -19,7 +19,7 @@ int Client::send(string ip, string port, string message, string *response) {
 
 	int sockFd, portNo, count;
 	struct sockaddr_in serverAddr;
-	const unsigned int bufferSize = 1024;
+	const unsigned int bufferSize = 4096;
 	char buffer[bufferSize];
 
 	portNo = atoi(port.c_str());

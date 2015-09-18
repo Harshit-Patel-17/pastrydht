@@ -22,7 +22,7 @@ void *serverRunner(void *arg) {
 	Node *node = (Node *) arg;
 	int sockFd, newSockFd, port, count;
 	unsigned int clientLen;
-	const unsigned int bufferSize = 1024;
+	const unsigned int bufferSize = 4096;
 	char buffer[bufferSize];
 	struct sockaddr_in serverAddr, clientAddr;
 	Packet packet;
@@ -72,7 +72,10 @@ void *serverRunner(void *arg) {
 			pthread_exit((void *) retVal);
 		}
 		packet.deserialize(buffer);
-		packet.print();
+		//packet.print();
+		RoutingTableStructure *routingTable = new RoutingTableStructure;
+		routingTable = (RoutingTableStructure *) packet.message.c_str();
+		routingTable->print();
 
 		//string message = packet.message;
 		//node->callback(message);

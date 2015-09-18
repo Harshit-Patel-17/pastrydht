@@ -6,6 +6,7 @@
 CPP_SRCS += \
 ../src/Client.cpp \
 ../src/Server.cpp \
+../src/StateTable.cpp \
 ../src/Ui.cpp \
 ../src/global.cpp \
 ../src/main.cpp 
@@ -13,6 +14,7 @@ CPP_SRCS += \
 OBJS += \
 ./src/Client.o \
 ./src/Server.o \
+./src/StateTable.o \
 ./src/Ui.o \
 ./src/global.o \
 ./src/main.o 
@@ -20,6 +22,7 @@ OBJS += \
 CPP_DEPS += \
 ./src/Client.d \
 ./src/Server.d \
+./src/StateTable.d \
 ./src/Ui.d \
 ./src/global.d \
 ./src/main.d 

@@ -20,6 +20,7 @@ int main(void) {
 	//Set up local node
 	string ip = "127.0.0.1";
 	string port = "3000";
+	cin >> port;
 	localNode.setNode(ip, port, getFromPastry);
 
 	//Set up app and Ui
@@ -36,7 +37,7 @@ int main(void) {
 	int totalArguments;
 	string *arguments;
 	string key = "aaaaaaaa";
-	string message = "Hello, How are you?";
+	string message = (char *) &(localNode.stateTable);
 	while(1) {
 		totalArguments = ui.getInputLine(&arguments);
 		string response = client.send(key, message);

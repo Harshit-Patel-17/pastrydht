@@ -28,4 +28,6 @@ public:
 	pthread_t start(Node *node);
 };
 
+extern Server server;
+
 #endif /* HEADER_SERVER_H_ */

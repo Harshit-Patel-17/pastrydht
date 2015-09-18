@@ -30,4 +30,6 @@ public:
 	string send(string key, string message, message_type type = APP_DATA);
 };
 
+extern Client client;
+
 #endif /* HEADER_CLIENT_H_ */

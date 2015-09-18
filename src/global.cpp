@@ -34,7 +34,11 @@ int Node::setNode(string nodeIp, string port, void (*callback)(string)) {
 	this->isNodeInitialized = true;
 
 	//TODO: Compute CRC-32bit hash for nodeIp:port here
-	this->nodeId = "12345678"; //Dummy nodeId
+	crc_32_type crc;
+	char crcString[9];
+	crc.process_bytes((nodeIp + port).data(), (nodeIp + port).size());
+	sprintf(crcString, "%x\n", crc.checksum());
+	this->nodeId = crcString;
 
 	//Register signals and signal handler
 	signal(SIGINT, signal_callback_handler);

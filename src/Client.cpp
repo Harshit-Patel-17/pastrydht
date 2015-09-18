@@ -7,6 +7,8 @@
 
 #include "../header/Client.h"
 
+Client client;
+
 Client::Client() {
 
 }

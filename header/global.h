@@ -15,11 +15,13 @@
 #include <unistd.h>
 #include <signal.h>
 #include <math.h>
+#include <boost/crc.hpp>
 #include <sys/socket.h>
 #include "StateTable.h"
 #include "Ui.h"
 
 using namespace std;
+using namespace boost;
 
 #define SOCK_CREATE_ERROR -1
 #define SOCK_BIND_ERROR -2

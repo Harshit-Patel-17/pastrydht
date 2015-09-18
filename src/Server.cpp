@@ -7,6 +7,8 @@
 
 #include "../header/Server.h"
 
+Server server;
+
 Server::Server() {
 
 }
@@ -72,7 +74,7 @@ void *serverRunner(void *arg) {
 			pthread_exit((void *) retVal);
 		}
 		packet.deserialize(buffer);
-		//packet.print();
+		packet.print();
 		RoutingTableStructure *routingTable = new RoutingTableStructure;
 		routingTable = (RoutingTableStructure *) packet.message.c_str();
 		routingTable->print();

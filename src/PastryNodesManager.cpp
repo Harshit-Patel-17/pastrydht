@@ -14,19 +14,19 @@ pastryNodesManager::pastryNodesManager() {
 pastryNodesManager::addPastryNode(string nodeId) {
 	if(pastryNodesMap.find(nodeId) == pastryNodesMap.end())
 	{
-		pastryNode *newPastryNode = pastryNode();
+		stateTable *newPastryNode = stateTable();
 		map[nodeId] = newPastryNode;
 	}
 }
 
 pastryNodesManager::removePastryNode(int nodeId) {
-	pastryNode *nodeToBeRemoved = pastryNodesMap[nodeId];
+	stateTable *nodeToBeRemoved = pastryNodesMap[nodeId];
 	pastryNodesMap.erase(nodeId);
 	delete nodeToBeRemoved;
 }
 
 pastryNodesManager::forward(string nodeId, string key, string message) {
-	pastryNode *currentNode = pastryNodesMap[nodeId];
+	stateTable *currentNode = pastryNodesMap[nodeId];
 	leafSetStructure leafSet = currentNode->getLeafSet();
 
 	string smallestInLeafSet = leafSet.closestSmallerIds[0], largestInLeafSet = leafSet.closestLargerIds[0];
@@ -58,6 +58,8 @@ pastryNodesManager::forward(string nodeId, string key, string message) {
 		routingTableStructure routingTable = currentNode->getRoutingTable();
 		int firstUnmatchingDigit = key[matchingPrefixLength];
 		string nearestNodeId = routingTable.entries[matchingPrefixLength][firstUnmatchingDigit];
+
+		// forward to *nearestNodeId*
 
 	}
 

@@ -12,7 +12,7 @@
 
 class pastryNodesManager
 {
-	map<string,pastryNode *> pastryNodesMap;
+	map<string,stateTable *> pastryNodesMap;
 public:
 	pastryNodesManager();
 	void addPastryNode(string nodeId);

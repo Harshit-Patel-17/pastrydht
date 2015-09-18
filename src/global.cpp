@@ -43,6 +43,25 @@ int Node::setNode(string nodeIp, string port, void (*callback)(string)) {
 	return 0;
 }
 
+void Node::join(string destNodeIp, string destPort) {
+	Packet packet;
+	packet.header.srcNodeId = nodeId;
+	packet.header.key = nodeId;
+	packet.header.type = JOIN;
+	packet.header.messageLength = 0;
+
+	struct NodeIdentifier nodeIdentifier;
+	strcpy(nodeIdentifier.ip,(localNode.nodeIp).c_str());
+	strcpy(nodeIdentifier.port,(localNode.port).c_str());
+
+	packet.message = (char *)&nodeIdentifier;
+
+	message = packet.serialize();
+	send(destNodeIp, destPort, message, &response);
+
+	cout<<response<<endl;
+}
+
 void Packet::print() {
 
 	cout << "Source Node Id: " << header.srcNodeId << endl;

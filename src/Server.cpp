@@ -25,7 +25,8 @@ void *serverRunner(void *arg) {
 	const unsigned int bufferSize = 4096;
 	char buffer[bufferSize];
 	struct sockaddr_in serverAddr, clientAddr;
-	Packet packet;
+	Packet packetRecieved, packetToBeSent;
+	string response = "";
 
 	//Create TCP socket
 	sockFd = socket(AF_INET, SOCK_STREAM, 0);
@@ -71,17 +72,43 @@ void *serverRunner(void *arg) {
 			close(newSockFd);
 			pthread_exit((void *) retVal);
 		}
-		packet.deserialize(buffer);
+		packetRecieved.deserialize(buffer);
 		//packet.print();
 		RoutingTableStructure *routingTable = new RoutingTableStructure;
-		routingTable = (RoutingTableStructure *) packet.message.c_str();
+		routingTable = (RoutingTableStructure *) packetRecieved.message.c_str();
 		routingTable->print();
 
 		//string message = packet.message;
 		//node->callback(message);
 
+		packetToBeSentBack.header.srcNodeId = localNode.nodeId;
+		packetToBeSentBack.header.key = "";
+
 		bzero(buffer, bufferSize);
-		strcpy(buffer, "I got your message");
+		switch(packet.header.type)
+		{
+			JOIN: // forward the message to the next hop
+				  cout<<client.send(packetRecieved.header.key, packetRecieved.message, packetRecieved.header.type)<<endl;
+
+				  // send back the packet(with state table) back to the newly joining node
+				  NodeIdentifier *nodeIdentifier = new NodeIdentifier;
+				  nodeIdentifier = (NodeIdentifier *)packetRecieved.message.c_str();
+				  packetToBeSentBack.message = (char *)&(localNode.stateTable.routingTable);
+				  packetToBeSentBack.header.type = STATE_TABLE;
+				  client.send(nodeIdentifier.ip,nodeIdentifier.port,packetToBeSentBack.serialize(),&response);
+				  cout<<response<<endl;
+				  strcpy(buffer, "join packet recieved");
+				  break;
+
+			STATE_TABLE: // to be used by state manager
+						 StateTable *stateTable = new StateTable;
+						 stateTable = (StateTable *) packetRecieved.message.c_str();
+						 stateTable.print();
+						 strcpy(buffer, "State table recieved");
+						 break;
+
+		}
+		//strcpy(buffer, packetToBeSent.serialize());
 		count = write(newSockFd, buffer, strlen(buffer));
 		if(count < 0) {
 			*retVal = SOCK_WRITE_ERROR;

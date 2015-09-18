@@ -9,9 +9,11 @@
 
 Node localNode;
 Ui ui;
-int keyLengthInBits = 32;
-int b = 4;
-int keyLength = keyLengthInBits / b;
+const int keyLengthInBits = 32;
+const int b = 4;
+const int l = pow(2, b);
+const int m = l;
+const int keyLength = keyLengthInBits / b;
 
 void signal_callback_handler(int signum) {
 
@@ -53,7 +55,7 @@ void Packet::print() {
 string Packet::serialize() {
 
 	string packet;
-	char type[2], messageLength[20]; //Assuming that messageLength won't be more than 19 digits long
+	char type[3], messageLength[20]; //Assuming that messageLength field won't be more than 19 digits long
 	sprintf(type, "%d", header.type);
 	sprintf(messageLength, "%d", header.messageLength);
 

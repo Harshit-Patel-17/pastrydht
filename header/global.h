@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
+#include <math.h>
 #include <sys/socket.h>
 #include "Ui.h"
 
@@ -60,7 +61,7 @@ struct Packet {
 
 extern Node localNode;
 extern Ui ui;
-extern int keyLengthInBits;
-extern int b;
-extern int keyLength;
+extern const int keyLengthInBits;
+extern const int b, l, m;
+extern const int keyLength;
 #endif /* HEADER_GLOBAL_H_ */

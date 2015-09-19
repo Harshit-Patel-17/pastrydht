@@ -9,7 +9,8 @@ CPP_SRCS += \
 ../src/StateTable.cpp \
 ../src/Ui.cpp \
 ../src/global.cpp \
-../src/main.cpp 
+../src/main.cpp \
+../src/stateTableManager.cpp 
 
 OBJS += \
 ./src/Client.o \
@@ -17,7 +18,8 @@ OBJS += \
 ./src/StateTable.o \
 ./src/Ui.o \
 ./src/global.o \
-./src/main.o 
+./src/main.o \
+./src/stateTableManager.o 
 
 CPP_DEPS += \
 ./src/Client.d \
@@ -25,7 +27,8 @@ CPP_DEPS += \
 ./src/StateTable.d \
 ./src/Ui.d \
 ./src/global.d \
-./src/main.d 
+./src/main.d \
+./src/stateTableManager.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

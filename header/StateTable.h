@@ -44,21 +44,17 @@ typedef struct RoutingTableStructure
 	void print();
 }RoutingTableStructure;
 
-class StateTable {
+struct StateTable {
 	LeafSetStructure leafSet;
 	NeighbourhoodSetStructure neighbourhoodSet;
 	RoutingTableStructure routingTable;
 	void initializeLeafSet();
 	void initializeNeighbourhoodSet();
 	void initializeRoutingTable();
-public:
+
 	StateTable();
 	StateTable(LeafSetStructure leafSet, NeighbourhoodSetStructure neighbourhoodSet, RoutingTableStructure routingTable);
 	virtual ~StateTable();
-
-	LeafSetStructure getLeafSet() { return leafSet;}
-	NeighbourhoodSetStructure getNeighbourhoodSet() { return neighbourhoodSet;}
-	RoutingTableStructure getRoutingTable() { return routingTable;}
 
 	void print();
 };

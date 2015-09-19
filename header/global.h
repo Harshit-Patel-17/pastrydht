@@ -44,9 +44,15 @@ struct Node {
 		isNodeInitialized = false;
 	}
 	int setNode(string nodeIp, string port, void (*callback)(string));
+	void join(string destNodeIp, string destPort);
 };
 
-enum message_type {APP_DATA, ROUTING_TABLE, CONTROL_DATA};
+enum message_type {APP_DATA, STATE_TABLE, CONTROL_DATA, JOIN, RESPONSE};
+
+struct NodeIdentifier {
+	char ip[16];
+	char port[6];
+};
 
 struct Header {
 	string srcNodeId;
@@ -60,7 +66,7 @@ struct Packet {
 	string message;
 	void print();
 	string serialize();
-	int deserialize(string packet);
+	int deserialize(char *packet);
 };
 
 extern Node localNode;

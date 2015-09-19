@@ -24,10 +24,9 @@ void *serverRunner(void *arg) {
 	Node *node = (Node *) arg;
 	int sockFd, newSockFd, port, count;
 	unsigned int clientLen;
-	const unsigned int bufferSize = 4096;
+	const unsigned int bufferSize = 8192;
 	char buffer[bufferSize];
 	struct sockaddr_in serverAddr, clientAddr;
-	Packet packet;
 
 	//Create TCP socket
 	sockFd = socket(AF_INET, SOCK_STREAM, 0);
@@ -51,6 +50,12 @@ void *serverRunner(void *arg) {
 		pthread_exit((void *) retVal);
 	}
 
+	Packet packetRecieved, packetToBeSentBack;
+	string response = "";
+	NodeIdentifier *nodeIdentifier = new NodeIdentifier;
+	StateTable *stateTable = new StateTable;
+	char *routingTable;
+
 	while(1) {
 		//Start listening to incoming connections
 		listen(sockFd, 5);
@@ -73,17 +78,41 @@ void *serverRunner(void *arg) {
 			close(newSockFd);
 			pthread_exit((void *) retVal);
 		}
-		packet.deserialize(buffer);
-		packet.print();
-		RoutingTableStructure *routingTable = new RoutingTableStructure;
-		routingTable = (RoutingTableStructure *) packet.message.c_str();
-		routingTable->print();
+		packetRecieved.deserialize(buffer);
 
 		//string message = packet.message;
 		//node->callback(message);
 
+
 		bzero(buffer, bufferSize);
-		strcpy(buffer, "I got your message");
+		switch(packetRecieved.header.type)
+		{
+		case JOIN: // forward the message to the next hop
+			//cout<<client.send(packetRecieved.header.key, packetRecieved.message, packetRecieved.header.type)<<endl;
+
+			// send the packet(with state table) back to the newly joining node
+			packetToBeSentBack.header.srcNodeId = localNode.nodeId;
+			packetToBeSentBack.header.key = packetRecieved.header.key;
+			packetToBeSentBack.header.type = STATE_TABLE;
+			packetToBeSentBack.header.messageLength = sizeof(RoutingTableStructure);
+			routingTable = (char *)&(localNode.stateTable.routingTable);
+			packetToBeSentBack.message = "";
+			for(unsigned int i = 0; i < sizeof(RoutingTableStructure); i++)
+				packetToBeSentBack.message.push_back(routingTable[i]);
+			nodeIdentifier = (NodeIdentifier *)packetRecieved.message.c_str();
+			client.send(nodeIdentifier->ip,nodeIdentifier->port,packetToBeSentBack.serialize(),&response);
+			cout<<response<<endl;
+			strcpy(buffer, "join packet recieved");
+			break;
+
+		case STATE_TABLE: // to be used by state manager
+			stateTable = (StateTable *) packetRecieved.message.c_str();
+			stateTable->print();
+			strcpy(buffer, "State table recieved");
+			break;
+
+		}
+		//strcpy(buffer, packetToBeSent.serialize());
 		count = write(newSockFd, buffer, strlen(buffer));
 		if(count < 0) {
 			*retVal = SOCK_WRITE_ERROR;

@@ -52,6 +52,7 @@ void Packet::print() {
 	cout << "Source Node Id: " << header.srcNodeId << endl;
 	cout << "           Key: " << header.key << endl;
 	cout << "          Type: " << header.type << endl;
+	cout << "Message Length: " << header.messageLength << endl;
 	cout << "       Message: " << message << endl;
 
 }
@@ -68,20 +69,22 @@ string Packet::serialize() {
 	packet += "type:" + string(type) + "\n";
 	packet += "messageLength:" + string(messageLength) + "\n";
 	packet += "#";
-	packet += message;
+
+	for(unsigned int i = 0; i < message.length(); i++)
+		packet.push_back(message[i]);
 
 	return packet;
 
 }
 
-int Packet::deserialize(string packet) {
+int Packet::deserialize(char *packet) {
 
 	int headerItemsRead;
 	char srcNodeId[keyLength+1], key[keyLength+1];
 	int type, messageLength;
 
 	//Read header fields
-	headerItemsRead = sscanf(packet.c_str(), "srcNodeId:%s key:%s type:%d messageLength:%d", srcNodeId, key, &type, &messageLength);
+	headerItemsRead = sscanf(packet, "srcNodeId:%s key:%s type:%d messageLength:%d", srcNodeId, key, &type, &messageLength);
 	if(headerItemsRead != 4)
 		return -1;
 	header.srcNodeId = srcNodeId;
@@ -90,8 +93,12 @@ int Packet::deserialize(string packet) {
 	header.messageLength = messageLength;
 
 	//Extract message
-	int messageStart = packet.find_first_of('#');
-	message = packet.substr(messageStart + 1, packet.length() - messageStart);
+	int messageStart;
+	for(messageStart = 0; packet[messageStart] != '#'; messageStart++);
+	messageStart++;
+	message = "";
+	for(int i = 0; i < messageLength; i++)
+		message.push_back(packet[messageStart + i]);
 
 	return 0;
 }

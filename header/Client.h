@@ -22,8 +22,8 @@
 using namespace std;
 
 class Client {
-	int send(string ip, string port, string message, string *response);
 public:
+	int send(string ip, string port, string message, string *response);
 	Client();
 	virtual ~Client();
 

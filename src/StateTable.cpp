@@ -9,9 +9,35 @@
 
 void LeafSetStructure::print() {
 
+	for(int i=0;i<L/2;i++)
+	{
+		if(strlen(closestSmallerIds[i].nodeId) == 0)
+			cout << "xxxxxxxx ";
+		else
+			cout << closestSmallerIds[i].nodeId << " ";
+	}
+
+	for(int i=0;i<L/2;i++)
+	{
+		if(strlen(closestLargerIds[i].nodeId) == 0)
+			cout << "xxxxxxxx ";
+		else
+			cout << closestLargerIds[i].nodeId << " ";
+	}
+	cout << endl;
+
 }
 
 void NeighbourhoodSetStructure::print() {
+
+	for(int i=0;i<M;i++)
+	{
+		if(strlen(closestNeighbours[i].nodeId) == 0)
+			cout << "xxxxxxxx ";
+		else
+			cout << closestNeighbours[i].nodeId << " ";
+	}
+	cout << endl;
 
 }
 
@@ -33,6 +59,14 @@ void RoutingTableStructure::print() {
 
 StateTable::StateTable() {
 	// TODO Auto-generated constructor stub
+
+}
+
+StateTable::StateTable(const StateTable &stateTable) {
+
+	this->leafSet = stateTable.leafSet;
+	this->routingTable = stateTable.routingTable;
+	this->neighbourhoodSet = stateTable.neighbourhoodSet;
 
 }
 
@@ -84,8 +118,14 @@ void StateTable::initializeNeighbourhoodSet() {
 
 void StateTable::print() {
 
+	cout << "Leaf Set" << endl;
 	leafSet.print();
+	cout << endl;
+	cout << "Routing Table" << endl;
 	routingTable.print();
+	cout << endl;
+	cout << "Neighbourhood Set" << endl;
 	neighbourhoodSet.print();
+	cout << endl;
 
 }

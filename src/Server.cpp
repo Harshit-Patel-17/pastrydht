@@ -50,7 +50,7 @@ void *serverRunner(void *arg) {
 		pthread_exit((void *) retVal);
 	}
 
-	Packet packetRecieved, packetToBeSentBack;
+	Packet packetReceived, packetToBeSentBack;
 	string response = "";
 	NodeIdentifier *nodeIdentifier = new NodeIdentifier;
 	StateTable *stateTable = new StateTable;
@@ -78,37 +78,38 @@ void *serverRunner(void *arg) {
 			close(newSockFd);
 			pthread_exit((void *) retVal);
 		}
-		packetRecieved.deserialize(buffer);
+		packetReceived.deserialize(buffer);
 
 		//string message = packet.message;
 		//node->callback(message);
 
 
 		bzero(buffer, bufferSize);
-		switch(packetRecieved.header.type)
+		switch(packetReceived.header.type)
 		{
 		case JOIN: // forward the message to the next hop
-			//cout<<client.send(packetRecieved.header.key, packetRecieved.message, packetRecieved.header.type)<<endl;
+			//cout<<client.send(packetReceived.header.key, packetReceived.message, packetReceived.header.type)<<endl;
 
 			// send the packet(with state table) back to the newly joining node
 			packetToBeSentBack.header.srcNodeId = localNode.nodeId;
-			packetToBeSentBack.header.key = packetRecieved.header.key;
+			packetToBeSentBack.header.key = packetReceived.header.key;
 			packetToBeSentBack.header.type = STATE_TABLE;
 			packetToBeSentBack.header.messageLength = sizeof(RoutingTableStructure);
 			routingTable = (char *)&(localNode.stateTable.routingTable);
 			packetToBeSentBack.message = "";
 			for(unsigned int i = 0; i < sizeof(RoutingTableStructure); i++)
 				packetToBeSentBack.message.push_back(routingTable[i]);
-			nodeIdentifier = (NodeIdentifier *)packetRecieved.message.c_str();
+			nodeIdentifier = (NodeIdentifier *)packetReceived.message.c_str();
 			client.send(nodeIdentifier->ip,nodeIdentifier->port,packetToBeSentBack.serialize(),&response);
-			cout<<response<<endl;
-			strcpy(buffer, "join packet recieved");
+			cout<<"Remote: " << response<<endl;
+			strcpy(buffer, "join packet received");
 			break;
 
 		case STATE_TABLE: // to be used by state manager
-			stateTable = (StateTable *) packetRecieved.message.c_str();
-			stateTable->print();
-			strcpy(buffer, "State table recieved");
+			stateTable = (StateTable *) packetReceived.message.c_str();
+			stateTableManager.insertInQ(packetReceived.header.srcNodeId, *stateTable);
+			//stateTable->print();
+			strcpy(buffer, "State table received");
 			break;
 
 		}

@@ -13,6 +13,9 @@
 #include <vector>
 #include <string.h>
 
+#define L 16
+#define M 16
+
 using namespace std;
 
 typedef struct cell
@@ -24,15 +27,15 @@ typedef struct cell
 
 typedef struct LeafSetStructure
 {
-	cell closestSmallerIds[2];
-	cell closestLargerIds[2];
+	cell closestSmallerIds[L/2];
+	cell closestLargerIds[L/2];
 
 	void print();
 }LeafSetStructure;
 
 typedef struct NeighbourhoodSetStructure
 {
-	cell closestNeighbours[4];
+	cell closestNeighbours[M];
 
 	void print();
 }NeighbourhoodSetStructure;
@@ -53,6 +56,7 @@ struct StateTable {
 	void initializeRoutingTable();
 
 	StateTable();
+	StateTable(const StateTable &stateTable);
 	StateTable(LeafSetStructure leafSet, NeighbourhoodSetStructure neighbourhoodSet, RoutingTableStructure routingTable);
 	virtual ~StateTable();
 

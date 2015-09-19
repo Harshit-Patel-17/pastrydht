@@ -30,21 +30,23 @@ using namespace boost;
 #define SOCK_WRITE_ERROR -5
 #define SOCK_CONNECT_ERROR -6
 
-struct Node {
+class Node {
+public:
 	string nodeIp;
 	string nodeId;
 	string port;
 	StateTable stateTable;
-	void (*callback)(string);
 	int serverSockFd;
 	bool isNodeInitialized;
 	Node() {
 		serverSockFd = -1;
-		callback = NULL;
 		isNodeInitialized = false;
 	}
-	int setNode(string nodeIp, string port, void (*callback)(string));
+	virtual ~Node() {}
+
+	int setNode(string nodeIp, string port);
 	void join(string destNodeIp, string destPort);
+	virtual void application(string s);
 };
 
 enum message_type {APP_DATA, STATE_TABLE, CONTROL_DATA, JOIN, RESPONSE};

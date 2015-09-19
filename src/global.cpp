@@ -24,13 +24,12 @@ void signal_callback_handler(int signum) {
 	exit(signum);
 }
 
-int Node::setNode(string nodeIp, string port, void (*callback)(string)) {
+int Node::setNode(string nodeIp, string port) {
 
 	if(isNodeInitialized)
 		return -1;
 	this->nodeIp = nodeIp;
 	this->port = port;
-	this->callback = callback;
 	this->isNodeInitialized = true;
 
 	//TODO: Compute CRC-32bit hash for nodeIp:port here

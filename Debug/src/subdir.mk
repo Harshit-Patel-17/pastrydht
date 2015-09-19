@@ -5,6 +5,7 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../src/Client.cpp \
+../src/Commands.cpp \
 ../src/Server.cpp \
 ../src/StateTable.cpp \
 ../src/Ui.cpp \
@@ -14,6 +15,7 @@ CPP_SRCS += \
 
 OBJS += \
 ./src/Client.o \
+./src/Commands.o \
 ./src/Server.o \
 ./src/StateTable.o \
 ./src/Ui.o \
@@ -23,6 +25,7 @@ OBJS += \
 
 CPP_DEPS += \
 ./src/Client.d \
+./src/Commands.d \
 ./src/Server.d \
 ./src/StateTable.d \
 ./src/Ui.d \

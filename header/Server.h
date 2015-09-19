@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include "global.h"
 #include "Client.h"
+#include "StateTableManager.h"
 
 using namespace std;
 

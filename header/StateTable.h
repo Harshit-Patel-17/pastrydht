@@ -27,8 +27,7 @@ typedef struct cell
 
 typedef struct LeafSetStructure
 {
-	cell closestSmallerIds[L/2];
-	cell closestLargerIds[L/2];
+	cell closestIds[L+1];
 
 	void print();
 }LeafSetStructure;

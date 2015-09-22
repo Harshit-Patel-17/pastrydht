@@ -49,7 +49,7 @@ public:
 	virtual void application(string s);
 };
 
-enum message_type {APP_DATA, STATE_TABLE, CONTROL_DATA, JOIN, RESPONSE};
+enum message_type {APP_DATA, STATE_TABLE, STATE_TABLE_A, STATE_TABLE_Z, CONTROL_DATA, JOIN, JOIN_A, RESPONSE};
 
 struct NodeIdentifier {
 	char ip[16];

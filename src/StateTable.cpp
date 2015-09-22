@@ -9,21 +9,14 @@
 
 void LeafSetStructure::print() {
 
-	for(int i=0;i<L/2;i++)
+	for(int i=0;i<L+1;i++)
 	{
-		if(strlen(closestSmallerIds[i].nodeId) == 0)
+		if(strlen(closestIds[i].nodeId) == 0)
 			cout << "xxxxxxxx ";
 		else
-			cout << closestSmallerIds[i].nodeId << " ";
+			cout << closestIds[i].nodeId << " ";
 	}
 
-	for(int i=0;i<L/2;i++)
-	{
-		if(strlen(closestLargerIds[i].nodeId) == 0)
-			cout << "xxxxxxxx ";
-		else
-			cout << closestLargerIds[i].nodeId << " ";
-	}
 	cout << endl;
 
 }
@@ -83,15 +76,11 @@ StateTable::StateTable(LeafSetStructure leafSet, NeighbourhoodSetStructure neigh
 }
 
 void StateTable::initializeLeafSet() {
-	for(int i=0;i<2;i++)
+	for(int i=0;i<L+1;i++)
 	{
-		strcpy(leafSet.closestSmallerIds[i].ip,"\0");
-		strcpy(leafSet.closestSmallerIds[i].port,"\0");
-		strcpy(leafSet.closestSmallerIds[i].nodeId,"\0");
-
-		strcpy(leafSet.closestLargerIds[i].ip,"\0");
-		strcpy(leafSet.closestLargerIds[i].port,"\0");
-		strcpy(leafSet.closestLargerIds[i].nodeId,"\0");
+		strcpy(leafSet.closestIds[i].ip,"\0");
+		strcpy(leafSet.closestIds[i].port,"\0");
+		strcpy(leafSet.closestIds[i].nodeId,"\0");
 	}
 }
 
@@ -108,7 +97,7 @@ void StateTable::initializeRoutingTable() {
 }
 
 void StateTable::initializeNeighbourhoodSet() {
-	for(int i=0;i<4;i++)
+	for(int i=0;i<M;i++)
 	{
 		strcpy(neighbourhoodSet.closestNeighbours[i].ip,"\0");
 		strcpy(neighbourhoodSet.closestNeighbours[i].port,"\0");

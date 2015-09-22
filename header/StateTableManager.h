@@ -17,11 +17,11 @@ using namespace std;
 
 class StateTableManager {
 public:
-	queue< pair<string, StateTable*> > Q;
+	queue< pair<pair<string, StateTable*>, message_type> > Q;
 	StateTableManager();
 	virtual ~StateTableManager();
 
-	void insertInQ(string nodeId, StateTable stateTable);
+	void insertInQ(string nodeId, StateTable stateTable, message_type type);
 	void join(string destNodeIp, string destPort);
 	pthread_t startManager();
 };

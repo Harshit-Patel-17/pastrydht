@@ -16,19 +16,10 @@ void Node::application(string s) {
 
 int main(void) {
 
-	//Set up local node
-	//string ip = "127.0.0.1";
-	//string port = "3000";
-	//cin >> port;
-	//localNode.setNode(ip, port);
-
 	//Set up app and Ui
 	string appName = "pastry";
 	string delim = "$";
 	ui.init(appName, delim, GOLD);
-
-	//Start server
-	//pthread_t serverId = server.start(&localNode);
 
 	int totalArguments;
 	string *arguments;
@@ -36,7 +27,8 @@ int main(void) {
 	pthread_t serverId;
 	while(1) {
 		totalArguments = ui.getInputLine(&arguments);
-		transform(arguments[0].begin(), arguments[0].end(), arguments[0].begin(), ::tolower);
+		if(totalArguments > 0)
+			transform(arguments[0].begin(), arguments[0].end(), arguments[0].begin(), ::tolower);
 		if(totalArguments > 0) {
 
 			if(arguments[0] == "help") {
@@ -106,7 +98,9 @@ int main(void) {
 				}
 			}
 			else {
-				cout << "Command '" << arguments[0] << "' not recognized" << endl;
+				cout << totalArguments << endl;
+				if(totalArguments > 0)
+					cout << "Command '" << arguments[0] << "' not recognized" << endl;
 			}
 		}
 		//if(port != "3000")

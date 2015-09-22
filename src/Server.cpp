@@ -88,12 +88,20 @@ void *serverRunner(void *arg) {
 		switch(packetReceived.header.type)
 		{
 		case JOIN: // forward the message to the next hop
+		case JOIN_A:
+			//Forward JOIN in case JOIN_A is received
+			//Send back STATE_TABLE_A in case JOIN_A is received
+			if(packetReceived.header.type == JOIN)
+				packetToBeSentBack.header.type = STATE_TABLE;
+			else {
+				packetToBeSentBack.header.type = STATE_TABLE_A;
+				packetReceived.header.type = JOIN;
+			}
 			//cout<<client.send(packetReceived.header.key, packetReceived.message, packetReceived.header.type)<<endl;
 
 			// send the packet(with state table) back to the newly joining node
 			packetToBeSentBack.header.srcNodeId = localNode.nodeId;
 			packetToBeSentBack.header.key = packetReceived.header.key;
-			packetToBeSentBack.header.type = STATE_TABLE;
 			packetToBeSentBack.header.messageLength = sizeof(RoutingTableStructure);
 			routingTable = (char *)&(localNode.stateTable.routingTable);
 			packetToBeSentBack.message = "";
@@ -101,13 +109,15 @@ void *serverRunner(void *arg) {
 				packetToBeSentBack.message.push_back(routingTable[i]);
 			nodeIdentifier = (NodeIdentifier *)packetReceived.message.c_str();
 			client.send(nodeIdentifier->ip,nodeIdentifier->port,packetToBeSentBack.serialize(),&response);
-			cout<<"Remote: " << response<<endl;
+			cout<<"Remote: " << response << endl;
 			strcpy(buffer, "join packet received");
 			break;
 
 		case STATE_TABLE: // to be used by state manager
+		case STATE_TABLE_A:
+		case STATE_TABLE_Z:
 			stateTable = (StateTable *) packetReceived.message.c_str();
-			stateTableManager.insertInQ(packetReceived.header.srcNodeId, *stateTable);
+			stateTableManager.insertInQ(packetReceived.header.srcNodeId, *stateTable, packetReceived.header.type);
 			//stateTable->print();
 			strcpy(buffer, "State table received");
 			break;

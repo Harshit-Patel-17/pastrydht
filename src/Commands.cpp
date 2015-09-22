@@ -33,6 +33,7 @@ pthread_t create() {
 		cout << "Cannot create server thread" << endl;
 
 	return serverId;
+
 }
 
 void join(string ip, string port) {

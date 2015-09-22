@@ -22,7 +22,7 @@ void StateTableManager::join(string destNodeIp, string destPort) {
 	Packet packet;
 	packet.header.srcNodeId = localNode.nodeId;
 	packet.header.key = localNode.nodeId;
-	packet.header.type = JOIN;
+	packet.header.type = JOIN_A;
 	packet.header.messageLength = sizeof(NodeIdentifier);
 
 	struct NodeIdentifier *nodeIdentifier = new NodeIdentifier;
@@ -45,11 +45,11 @@ void StateTableManager::join(string destNodeIp, string destPort) {
 
 pthread_mutex_t lock;
 
-void StateTableManager::insertInQ(string nodeId, StateTable stateTable) {
+void StateTableManager::insertInQ(string nodeId, StateTable stateTable, message_type type) {
 
 	StateTable *newStateTable = new StateTable(stateTable);
 
-	Q.push(make_pair(nodeId, newStateTable));
+	Q.push(make_pair(make_pair(nodeId, newStateTable), type));
 
 	if(Q.size() == 1)
 		pthread_mutex_unlock(&lock);
@@ -59,16 +59,16 @@ void StateTableManager::insertInQ(string nodeId, StateTable stateTable) {
 void *stateTableManagerRunner(void *arg) {
 
 	cout << "In runner" << endl;
-	queue< pair<string, StateTable*> > *Q = (queue< pair<string, StateTable*> > *)arg;
+	queue< pair<pair<string, StateTable*>, message_type> > *Q = (queue< pair<pair<string, StateTable*>, message_type> > *)arg;
 	while(1) {
 		if(Q->size() == 0)
 			pthread_mutex_lock(&lock);
 		else {
-			pair<string, StateTable*> QElem = Q->front();
+			pair<pair<string, StateTable*>, message_type> QElem = Q->front();
 			Q->pop();
 
-			cout << QElem.first << endl;
-			QElem.second->print();
+			cout << QElem.first.first << endl;
+			QElem.first.second->print();
 		}
 	}
 

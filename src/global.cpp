@@ -36,7 +36,7 @@ int Node::setNode(string nodeIp, string port) {
 	crc_32_type crc;
 	char crcString[9];
 	crc.process_bytes((nodeIp + port).data(), (nodeIp + port).size());
-	sprintf(crcString, "%x\n", crc.checksum());
+	sprintf(crcString, "%x", crc.checksum());
 	this->nodeId = crcString;
 
 	//Register signals and signal handler
@@ -100,4 +100,19 @@ int Packet::deserialize(char *packet) {
 		message.push_back(packet[messageStart + i]);
 
 	return 0;
+}
+
+int shl(string s1, string s2) {
+
+	int prefixLength = 0;
+
+	for(int i = 0; i < keyLength; i++) {
+		if(s1[i] == s2[i])
+			prefixLength++;
+		else
+			break;
+	}
+
+	return prefixLength;
+
 }

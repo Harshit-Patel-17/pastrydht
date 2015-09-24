@@ -54,7 +54,7 @@ void *serverRunner(void *arg) {
 	string response = "";
 	NodeIdentifier *nodeIdentifier = new NodeIdentifier;
 	StateTable *stateTable = new StateTable;
-	char *routingTable;
+	char *stateTableString;
 
 	while(1) {
 		//Start listening to incoming connections
@@ -85,28 +85,38 @@ void *serverRunner(void *arg) {
 
 
 		bzero(buffer, bufferSize);
-		switch(packetReceived.header.type)
+		string status;
+		message_type type = packetReceived.header.type;
+		switch(type)
 		{
-		case JOIN: // forward the message to the next hop
+		case JOIN:
 		case JOIN_A:
 			//Forward JOIN in case JOIN_A is received
 			//Send back STATE_TABLE_A in case JOIN_A is received
-			if(packetReceived.header.type == JOIN)
+			if(type == JOIN)
 				packetToBeSentBack.header.type = STATE_TABLE;
 			else {
 				packetToBeSentBack.header.type = STATE_TABLE_A;
 				packetReceived.header.type = JOIN;
 			}
-			//cout<<client.send(packetReceived.header.key, packetReceived.message, packetReceived.header.type)<<endl;
+
+			// forward the message to the next hop
+			status = client.send(packetReceived.header.key, packetReceived.message, packetReceived.header.type);
+			if(status.compare("Destination reached") == 0) {
+				if(type == JOIN_A)
+					packetToBeSentBack.header.type = STATE_TABLE_AZ;
+				else
+					packetToBeSentBack.header.type = STATE_TABLE_Z;
+			}
 
 			// send the packet(with state table) back to the newly joining node
 			packetToBeSentBack.header.srcNodeId = localNode.nodeId;
 			packetToBeSentBack.header.key = packetReceived.header.key;
-			packetToBeSentBack.header.messageLength = sizeof(RoutingTableStructure);
-			routingTable = (char *)&(localNode.stateTable.routingTable);
+			packetToBeSentBack.header.messageLength = sizeof(StateTable);
+			stateTableString = (char *)&(localNode.stateTable);
 			packetToBeSentBack.message = "";
-			for(unsigned int i = 0; i < sizeof(RoutingTableStructure); i++)
-				packetToBeSentBack.message.push_back(routingTable[i]);
+			for(unsigned int i = 0; i < sizeof(StateTable); i++)
+				packetToBeSentBack.message.push_back(stateTableString[i]);
 			nodeIdentifier = (NodeIdentifier *)packetReceived.message.c_str();
 			client.send(nodeIdentifier->ip,nodeIdentifier->port,packetToBeSentBack.serialize(),&response);
 			cout<<"Remote: " << response << endl;
@@ -116,9 +126,10 @@ void *serverRunner(void *arg) {
 		case STATE_TABLE: // to be used by state manager
 		case STATE_TABLE_A:
 		case STATE_TABLE_Z:
+		case STATE_TABLE_X:
+		case STATE_TABLE_AZ:
 			stateTable = (StateTable *) packetReceived.message.c_str();
 			stateTableManager.insertInQ(packetReceived.header.srcNodeId, *stateTable, packetReceived.header.type);
-			//stateTable->print();
 			strcpy(buffer, "State table received");
 			break;
 

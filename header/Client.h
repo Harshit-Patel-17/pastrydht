@@ -17,11 +17,14 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <limits.h>
+#include <math.h>
 #include "global.h"
 
 using namespace std;
 
 class Client {
+	cell forward(string key);
 public:
 	int send(string ip, string port, string message, string *response);
 	Client();

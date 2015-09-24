@@ -47,6 +47,7 @@ typedef struct RoutingTableStructure
 }RoutingTableStructure;
 
 struct StateTable {
+	int count; //Useful in joining
 	LeafSetStructure leafSet;
 	NeighbourhoodSetStructure neighbourhoodSet;
 	RoutingTableStructure routingTable;
@@ -59,6 +60,7 @@ struct StateTable {
 	StateTable(LeafSetStructure leafSet, NeighbourhoodSetStructure neighbourhoodSet, RoutingTableStructure routingTable);
 	virtual ~StateTable();
 
+	void init(cell localNodeCell);
 	void print();
 };
 

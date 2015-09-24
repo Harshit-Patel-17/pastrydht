@@ -49,7 +49,7 @@ public:
 	virtual void application(string s);
 };
 
-enum message_type {APP_DATA, STATE_TABLE, STATE_TABLE_A, STATE_TABLE_Z, CONTROL_DATA, JOIN, JOIN_A, RESPONSE};
+enum message_type {APP_DATA, STATE_TABLE, STATE_TABLE_A, STATE_TABLE_Z, STATE_TABLE_X, STATE_TABLE_AZ, JOIN, JOIN_A, RESPONSE};
 
 struct NodeIdentifier {
 	char ip[16];
@@ -76,4 +76,6 @@ extern Ui ui;
 extern const int keyLengthInBits;
 extern const int b, l, m;
 extern const int keyLength;
+
+int shl(string s1, string s2);
 #endif /* HEADER_GLOBAL_H_ */

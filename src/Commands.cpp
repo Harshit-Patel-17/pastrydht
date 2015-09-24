@@ -32,6 +32,16 @@ pthread_t create() {
 	if(serverId < 0)
 		cout << "Cannot create server thread" << endl;
 
+	//Initialize state table
+	cell localNodeCell;
+	strcpy(localNodeCell.nodeId, localNode.nodeId.c_str());
+	strcpy(localNodeCell.ip, localNode.nodeIp.c_str());
+	strcpy(localNodeCell.port, localNode.port.c_str());
+	localNode.stateTable.init(localNodeCell);
+
+	//Start state table manager
+	stateTableManager.startManager();
+
 	return serverId;
 
 }
@@ -39,7 +49,7 @@ pthread_t create() {
 void join(string ip, string port) {
 
 	//TODO: Check correctness of ip and port format
-	stateTableManager.join(ip, port);
+	stateTableManager.joinPhase1(ip, port);
 
 }
 

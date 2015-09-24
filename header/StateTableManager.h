@@ -10,6 +10,7 @@
 
 #include <string>
 #include <queue>
+#include <map>
 #include "global.h"
 #include "Client.h"
 
@@ -22,8 +23,12 @@ public:
 	virtual ~StateTableManager();
 
 	void insertInQ(string nodeId, StateTable stateTable, message_type type);
-	void join(string destNodeIp, string destPort);
+	void joinPhase1(string destNodeIp, string destPort);
+	void joinPhase2();
 	pthread_t startManager();
+	void updateLeafSet(pair<pair<string, StateTable*>, message_type> QElem);
+	void updateLeafSet(cell nodeCell);
+	void updateNeighbourhoodSet(pair<pair<string, StateTable*>, message_type> QElem);
 };
 
 extern StateTableManager stateTableManager;

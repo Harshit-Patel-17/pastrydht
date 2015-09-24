@@ -9,6 +9,48 @@
 
 Client client;
 
+cell Client::forward(string key) {
+
+	//Check whether key lies within leaf-set
+	string minKey, maxKey;
+	for(int i = 0; i < L+1; i++) {
+		if(strlen(localNode.stateTable.leafSet.closestIds[i].nodeId) != 0) {
+			if(strcmp(minKey.c_str(), localNode.stateTable.leafSet.closestIds[i].nodeId) > 0)
+				minKey = localNode.stateTable.leafSet.closestIds[i].nodeId;
+			if(strcmp(maxKey.c_str(), localNode.stateTable.leafSet.closestIds[i].nodeId) < 0)
+				maxKey = localNode.stateTable.leafSet.closestIds[i].nodeId;
+		}
+	}
+	int closestNodeIdIndex, min = INT_MAX;
+	if(strcmp(minKey.c_str(), key.c_str()) <= 0 && strcmp(maxKey.c_str(), key.c_str()) >= 0) {
+		for(int i = 0; i < L+1; i++) {
+			if(strlen(localNode.stateTable.leafSet.closestIds[i].nodeId) != 0) {
+				int difference = abs(strcmp(key.c_str(), localNode.stateTable.leafSet.closestIds[i].nodeId));
+				if(difference < min) {
+					closestNodeIdIndex = i;
+					min = difference;
+				}
+			}
+		}
+		return localNode.stateTable.leafSet.closestIds[closestNodeIdIndex];
+	}
+
+	//Find entry in routing table
+	int l = shl(key, localNode.nodeId);
+	int row = l, column = (key[l] < 58) ? (key[l] - '0') : (key[l] - 'a' + 10);
+	if(strlen(localNode.stateTable.routingTable.entries[row][column].nodeId) != 0) {
+		return localNode.stateTable.routingTable.entries[row][column];
+	}
+
+	//Rare case
+	cell tempCell;
+	strcpy(tempCell.ip, localNode.nodeIp.c_str());
+	strcpy(tempCell.nodeId, localNode.nodeId.c_str());
+	strcpy(tempCell.port, localNode.port.c_str());
+
+	return tempCell;
+}
+
 Client::Client() {
 
 }
@@ -61,11 +103,19 @@ int Client::send(string ip, string port, string message, string *response) {
 
 string Client::send(string key, string message, message_type type) {
 
-	//Todo: Write logic to obtain destination nodeIp from key using Routing Table
+	cell nextHop = forward(key);
+
+	/*cout << "IP: " << nextHop.ip << endl;
+	cout << "Port: " << nextHop.port << endl;
+	cout << "NodeId: " << nextHop.nodeId << endl;
+	cout << "Local: " << localNode.nodeId << endl;*/
+
+	if(strcmp(nextHop.nodeId, localNode.nodeId.c_str()) == 0)
+		return "Destination reached";
 
 	string response;
-	string ip = "127.0.0.1"; //Test Ip
-	string port = "3000"; //Test Port
+	string ip = nextHop.ip;
+	string port = nextHop.port;
 
 	//Construct a packet to be sent
 	Packet packet;

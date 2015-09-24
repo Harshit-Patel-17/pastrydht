@@ -52,11 +52,13 @@ void RoutingTableStructure::print() {
 
 StateTable::StateTable() {
 	// TODO Auto-generated constructor stub
+	count = 0;
 
 }
 
 StateTable::StateTable(const StateTable &stateTable) {
 
+	this->count = stateTable.count;
 	this->leafSet = stateTable.leafSet;
 	this->routingTable = stateTable.routingTable;
 	this->neighbourhoodSet = stateTable.neighbourhoodSet;
@@ -103,6 +105,23 @@ void StateTable::initializeNeighbourhoodSet() {
 		strcpy(neighbourhoodSet.closestNeighbours[i].port,"\0");
 		strcpy(neighbourhoodSet.closestNeighbours[i].nodeId,"\0");
 	}
+}
+
+void StateTable::init(cell localNodeCell) {
+
+	//Initialize leaf-set
+	leafSet.closestIds[L/2] = localNodeCell;
+
+	//Initialize routing-table
+	string localNodeId = localNodeCell.nodeId;
+	for(int i = 0; i < 8; i++) {
+		int j = (localNodeId[i] < 58) ? (localNodeId[i] - '0') : (localNodeId[i] - 'a' + 10);
+		routingTable.entries[i][j] = localNodeCell;
+	}
+
+	//Initialize neighborhood set
+	neighbourhoodSet.closestNeighbours[0] = localNodeCell;
+
 }
 
 void StateTable::print() {

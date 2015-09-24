@@ -123,8 +123,27 @@ void StateTableManager::updateNeighbourhoodSet(pair<pair<string, StateTable*>, m
 
 }
 
+bool StateTableManager::allStateTableReceived() {
+
+	int maxHopCount = hopCountVector[0];
+
+	for(int i = 0; i < hopCountVector.size(); i++)
+		maxHopCount = max(maxHopCount, hopCountVector[i]);
+
+	return maxHopCount == hopCountVector.size();
+}
+
+void StateTableManager::clearAll() {
+
+	zReceived = false;
+	hopCountVector.clear();
+
+}
+
 StateTableManager::StateTableManager() {
-	// TODO Auto-generated constructor stub
+
+	zReceived = false;
+	hopCountVector.clear();
 
 }
 
@@ -136,6 +155,7 @@ void StateTableManager::joinPhase1(string destNodeIp, string destPort) {
 	Packet packet;
 	packet.header.srcNodeId = localNode.nodeId;
 	packet.header.key = localNode.nodeId;
+	packet.header.hopCount = 0;
 	packet.header.type = JOIN_A;
 	packet.header.messageLength = sizeof(NodeIdentifier);
 
@@ -243,6 +263,7 @@ void *stateTableManagerRunner(void *arg) {
 
 			cout << "NodeId: " << QElem.first.first << endl;
 			cout << "Type: " << QElem.second << endl;
+			cout << "Hop Count: " << QElem.first.second->hopCount << endl;
 
 			int l = shl(localNode.nodeId, QElem.first.first);
 			for(int i = 0; i < 16; i++) {
@@ -253,11 +274,23 @@ void *stateTableManagerRunner(void *arg) {
 			switch(QElem.second) {
 			case STATE_TABLE_A:
 				stateTableManager.updateNeighbourhoodSet(QElem);
+				stateTableManager.hopCountVector.push_back(QElem.first.second->hopCount);
+				if(stateTableManager.zReceived) {
+					if(stateTableManager.allStateTableReceived()) {
+						stateTableManager.joinPhase2();
+						stateTableManager.clearAll();
+					}
+				}
 				break;
 
 			case STATE_TABLE_Z:
 				stateTableManager.updateLeafSet(QElem);
-				stateTableManager.joinPhase2();
+				stateTableManager.zReceived = true;
+				stateTableManager.hopCountVector.push_back(QElem.first.second->hopCount);
+				if(stateTableManager.allStateTableReceived()) {
+					stateTableManager.joinPhase2();
+					stateTableManager.clearAll();
+				}
 				break;
 
 			case STATE_TABLE_X:
@@ -267,7 +300,12 @@ void *stateTableManagerRunner(void *arg) {
 			case STATE_TABLE_AZ:
 				stateTableManager.updateNeighbourhoodSet(QElem);
 				stateTableManager.updateLeafSet(QElem);
-				stateTableManager.joinPhase2();
+				stateTableManager.zReceived = true;
+				stateTableManager.hopCountVector.push_back(QElem.first.second->hopCount);
+				if(stateTableManager.allStateTableReceived()) {
+					stateTableManager.joinPhase2();
+					stateTableManager.clearAll();
+				}
 				break;
 			}
 			localNode.stateTable.print();

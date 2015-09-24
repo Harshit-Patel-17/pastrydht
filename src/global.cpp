@@ -50,6 +50,7 @@ void Packet::print() {
 
 	cout << "Source Node Id: " << header.srcNodeId << endl;
 	cout << "           Key: " << header.key << endl;
+	cout << "     Hop Count: " << header.hopCount << endl;
 	cout << "          Type: " << header.type << endl;
 	cout << "Message Length: " << header.messageLength << endl;
 	cout << "       Message: " << message << endl;
@@ -59,12 +60,15 @@ void Packet::print() {
 string Packet::serialize() {
 
 	string packet;
-	char type[3], messageLength[20]; //Assuming that messageLength field won't be more than 19 digits long
+	char hopCount[20], type[3], messageLength[20]; //Assuming that messageLength and hopCount field won't be more than 19 digits long
+
+	sprintf(hopCount, "%d", header.hopCount);
 	sprintf(type, "%d", header.type);
 	sprintf(messageLength, "%d", header.messageLength);
 
 	packet = "srcNodeId:" + header.srcNodeId + "\n";
 	packet += "key:" + header.key + "\n";
+	packet += "hopCount:" + string(hopCount) + "\n";
 	packet += "type:" + string(type) + "\n";
 	packet += "messageLength:" + string(messageLength) + "\n";
 	packet += "#";
@@ -80,14 +84,15 @@ int Packet::deserialize(char *packet) {
 
 	int headerItemsRead;
 	char srcNodeId[keyLength+1], key[keyLength+1];
-	int type, messageLength;
+	int hopCount, type, messageLength;
 
 	//Read header fields
-	headerItemsRead = sscanf(packet, "srcNodeId:%s key:%s type:%d messageLength:%d", srcNodeId, key, &type, &messageLength);
-	if(headerItemsRead != 4)
+	headerItemsRead = sscanf(packet, "srcNodeId:%s key:%s hopCount:%d type:%d messageLength:%d", srcNodeId, key, &hopCount, &type, &messageLength);
+	if(headerItemsRead != 5)
 		return -1;
 	header.srcNodeId = srcNodeId;
 	header.key = key;
+	header.hopCount = hopCount;
 	header.type = (message_type)type;
 	header.messageLength = messageLength;
 

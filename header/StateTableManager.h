@@ -11,6 +11,7 @@
 #include <string>
 #include <queue>
 #include <map>
+#include <vector>
 #include "global.h"
 #include "Client.h"
 
@@ -18,6 +19,8 @@ using namespace std;
 
 class StateTableManager {
 public:
+	vector<int> hopCountVector;
+	bool zReceived;
 	queue< pair<pair<string, StateTable*>, message_type> > Q;
 	StateTableManager();
 	virtual ~StateTableManager();
@@ -29,6 +32,8 @@ public:
 	void updateLeafSet(pair<pair<string, StateTable*>, message_type> QElem);
 	void updateLeafSet(cell nodeCell);
 	void updateNeighbourhoodSet(pair<pair<string, StateTable*>, message_type> QElem);
+	bool allStateTableReceived();
+	void clearAll();
 };
 
 extern StateTableManager stateTableManager;

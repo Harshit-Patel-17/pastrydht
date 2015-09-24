@@ -47,7 +47,7 @@ typedef struct RoutingTableStructure
 }RoutingTableStructure;
 
 struct StateTable {
-	int count; //Useful in joining
+	int hopCount; //Useful in joining
 	LeafSetStructure leafSet;
 	NeighbourhoodSetStructure neighbourhoodSet;
 	RoutingTableStructure routingTable;

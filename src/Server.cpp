@@ -101,7 +101,7 @@ void *serverRunner(void *arg) {
 			}
 
 			// forward the message to the next hop
-			status = client.send(packetReceived.header.key, packetReceived.message, packetReceived.header.type);
+			status = client.send(packetReceived.header.key, packetReceived.message, packetReceived.header.type, packetReceived.header.hopCount + 1);
 			if(status.compare("Destination reached") == 0) {
 				if(type == JOIN_A)
 					packetToBeSentBack.header.type = STATE_TABLE_AZ;
@@ -112,7 +112,9 @@ void *serverRunner(void *arg) {
 			// send the packet(with state table) back to the newly joining node
 			packetToBeSentBack.header.srcNodeId = localNode.nodeId;
 			packetToBeSentBack.header.key = packetReceived.header.key;
+			packetToBeSentBack.header.hopCount = 0;
 			packetToBeSentBack.header.messageLength = sizeof(StateTable);
+			localNode.stateTable.hopCount = packetReceived.header.hopCount + 1;
 			stateTableString = (char *)&(localNode.stateTable);
 			packetToBeSentBack.message = "";
 			for(unsigned int i = 0; i < sizeof(StateTable); i++)

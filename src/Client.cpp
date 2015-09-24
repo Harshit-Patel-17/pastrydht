@@ -101,7 +101,7 @@ int Client::send(string ip, string port, string message, string *response) {
 
 }
 
-string Client::send(string key, string message, message_type type) {
+string Client::send(string key, string message, message_type type, int hopCount) {
 
 	cell nextHop = forward(key);
 
@@ -121,6 +121,7 @@ string Client::send(string key, string message, message_type type) {
 	Packet packet;
 	packet.header.srcNodeId = localNode.nodeId;
 	packet.header.key = key;
+	packet.header.hopCount = hopCount;
 	packet.header.type = type;
 	packet.header.messageLength = message.length();
 	packet.message = message;

@@ -51,14 +51,14 @@ void RoutingTableStructure::print() {
 }
 
 StateTable::StateTable() {
-	// TODO Auto-generated constructor stub
-	count = 0;
+
+	hopCount = 0;
 
 }
 
 StateTable::StateTable(const StateTable &stateTable) {
 
-	this->count = stateTable.count;
+	this->hopCount = stateTable.hopCount;
 	this->leafSet = stateTable.leafSet;
 	this->routingTable = stateTable.routingTable;
 	this->neighbourhoodSet = stateTable.neighbourhoodSet;
@@ -71,6 +71,7 @@ StateTable::~StateTable() {
 
 StateTable::StateTable(LeafSetStructure leafSet, NeighbourhoodSetStructure neighbourhoodSet, RoutingTableStructure routingTable) {
 
+	this->hopCount = 0;
 	this->leafSet = leafSet;
 	this->neighbourhoodSet = neighbourhoodSet;
 	this->routingTable = routingTable;

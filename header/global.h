@@ -59,6 +59,7 @@ struct NodeIdentifier {
 struct Header {
 	string srcNodeId;
 	string key;
+	int hopCount;
 	message_type type;
 	unsigned int messageLength;
 };

@@ -30,7 +30,7 @@ public:
 	Client();
 	virtual ~Client();
 
-	string send(string key, string message, message_type type = APP_DATA);
+	string send(string key, string message, message_type type = APP_DATA, int hopCount = 0);
 };
 
 extern Client client;

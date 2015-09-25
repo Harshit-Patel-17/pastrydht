@@ -64,7 +64,7 @@ void put(string key, string value) {
 
 	//Compute CRC32 hash of key
 	crc.process_bytes(key.data(), key.size());
-	sprintf(crcString, "%x", crc.checksum());
+	sprintf(crcString, "%08x", crc.checksum());
 
 	cout << "Key: " << crcString << endl;
 
@@ -96,7 +96,7 @@ void get(string key) {
 
 	//Compute CRC32 hash of key
 	crc.process_bytes(key.data(), key.size());
-	sprintf(crcString, "%x", crc.checksum());
+	sprintf(crcString, "%08x", crc.checksum());
 
 	//Build KeyValue structure
 	strcpy(keyValue.ip, localNode.nodeIp.c_str());
@@ -107,10 +107,20 @@ void get(string key) {
 	for(unsigned int i = 0; i < sizeof(KeyValue); i++)
 		message.push_back(keyValueString[i]);
 
-	packet.build(localNode.nodeId, crcString, 0, GET, message);
-	client.send(localNode.nodeIp, localNode.port, packet.serialize(), &response);
+	cell nextHop = client.forward(crcString);
 
-	cout << "Remote: " << response << endl;
+	if(strcmp(nextHop.nodeId, localNode.nodeId.c_str()) == 0) {
+		if(localNode.HT.find(crcString) == localNode.HT.end()) {
+			cout << "Key not found!" << endl;
+		} else {
+			cout << "Get success" << endl;
+			cout << "Value: " << localNode.HT[crcString] << endl;
+		}
+	} else {
+		packet.build(localNode.nodeId, crcString, 0, GET, message);
+		client.send(localNode.nodeIp, localNode.port, packet.serialize(), &response);
+		cout << "Remote: " << response << endl;
+	}
 
 }
 

@@ -14,6 +14,7 @@
 #include <vector>
 #include "global.h"
 #include "Client.h"
+#include "HTManager.h"
 
 using namespace std;
 
@@ -28,6 +29,7 @@ public:
 	void insertInQ(string nodeId, StateTable stateTable, message_type type);
 	void joinPhase1(string destNodeIp, string destPort);
 	void joinPhase2();
+	void redistributePhase();
 	pthread_t startManager();
 	void updateLeafSet(pair<pair<string, StateTable*>, message_type> QElem);
 	void updateLeafSet(cell nodeCell);

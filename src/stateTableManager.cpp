@@ -218,6 +218,49 @@ void StateTableManager::joinPhase2() {
 
 }
 
+void StateTableManager::redistributePhase() {
+
+	//Find max from left part of leaf set
+	cell maxInLeft;
+	strcpy(maxInLeft.nodeId, "\0");
+	for(int i = 0; i < L/2; i++) {
+		if(strlen(localNode.stateTable.leafSet.closestIds[i].nodeId) != 0) {
+			if(strlen(maxInLeft.nodeId) == 0) {
+				maxInLeft = localNode.stateTable.leafSet.closestIds[i];
+			} else {
+				if(strcmp(localNode.stateTable.leafSet.closestIds[i].nodeId, maxInLeft.nodeId) > 0)
+					maxInLeft = localNode.stateTable.leafSet.closestIds[i];
+			}
+		}
+	}
+
+	//Find min from right part of leaf set
+	cell minInRight;
+	strcpy(minInRight.nodeId, "\0");
+	for(int i = L/2+1; i < L+1; i++) {
+		if(strlen(localNode.stateTable.leafSet.closestIds[i].nodeId) != 0) {
+			if(strlen(minInRight.nodeId) == 0) {
+				minInRight = localNode.stateTable.leafSet.closestIds[i];
+			} else {
+				if(strcmp(localNode.stateTable.leafSet.closestIds[i].nodeId, minInRight.nodeId) < 0)
+					minInRight = localNode.stateTable.leafSet.closestIds[i];
+			}
+		}
+	}
+
+	//Send redistribute packet
+	Packet packet;
+	string response;
+	if(strlen(maxInLeft.nodeId) != 0) {
+		packet.build(localNode.nodeId, maxInLeft.nodeId, 0, REDISTRIBUTE, "");
+		client.send(maxInLeft.ip, maxInLeft.port, packet.serialize(), &response);
+	}
+	if(strlen(minInRight.nodeId) != 0) {
+		packet.build(localNode.nodeId, minInRight.nodeId, 0, REDISTRIBUTE, "");
+		client.send(minInRight.ip, minInRight.port, packet.serialize(), &response);
+	}
+}
+
 pthread_mutex_t lock;
 
 void StateTableManager::insertInQ(string nodeId, StateTable stateTable, message_type type) {
@@ -260,6 +303,7 @@ void *stateTableManagerRunner(void *arg) {
 					if(stateTableManager.allStateTableReceived()) {
 						stateTableManager.joinPhase2();
 						stateTableManager.clearAll();
+						stateTableManager.redistributePhase();
 					}
 				}
 				break;
@@ -271,6 +315,7 @@ void *stateTableManagerRunner(void *arg) {
 				if(stateTableManager.allStateTableReceived()) {
 					stateTableManager.joinPhase2();
 					stateTableManager.clearAll();
+					stateTableManager.redistributePhase();
 				}
 				break;
 
@@ -287,6 +332,7 @@ void *stateTableManagerRunner(void *arg) {
 				if(stateTableManager.allStateTableReceived()) {
 					stateTableManager.joinPhase2();
 					stateTableManager.clearAll();
+					stateTableManager.redistributePhase();
 				}
 				break;
 			}

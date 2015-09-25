@@ -188,6 +188,12 @@ void *serverRunner(void *arg) {
 				cout << "Key not found!" << endl;
 			break;
 
+		case REDISTRIBUTE:
+			cout << "REDISTRIBUTE REQUEST RECIEVED" << endl;
+			strcpy(buffer, "redistribute packet received");
+			count = write(newSockFd, buffer, strlen(buffer));
+			htManager.redistribute();
+			break;
 		}
 		//strcpy(buffer, packetToBeSent.serialize());
 		//count = write(newSockFd, buffer, strlen(buffer));

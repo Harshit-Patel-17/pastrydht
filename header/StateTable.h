@@ -13,8 +13,8 @@
 #include <vector>
 #include <string.h>
 
-#define L 16
-#define M 16
+#define L 4
+#define M 4
 
 using namespace std;
 

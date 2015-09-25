@@ -19,6 +19,7 @@
 #include "global.h"
 #include "Client.h"
 #include "StateTableManager.h"
+#include "HTManager.h"
 
 using namespace std;
 

@@ -24,8 +24,8 @@
 using namespace std;
 
 class Client {
-	cell forward(string key);
 public:
+	cell forward(string key);
 	int send(string ip, string port, string message, string *response);
 	Client();
 	virtual ~Client();

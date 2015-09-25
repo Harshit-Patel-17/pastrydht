@@ -6,6 +6,7 @@
 CPP_SRCS += \
 ../src/Client.cpp \
 ../src/Commands.cpp \
+../src/HTManager.cpp \
 ../src/Server.cpp \
 ../src/StateTable.cpp \
 ../src/Ui.cpp \
@@ -16,6 +17,7 @@ CPP_SRCS += \
 OBJS += \
 ./src/Client.o \
 ./src/Commands.o \
+./src/HTManager.o \
 ./src/Server.o \
 ./src/StateTable.o \
 ./src/Ui.o \
@@ -26,6 +28,7 @@ OBJS += \
 CPP_DEPS += \
 ./src/Client.d \
 ./src/Commands.d \
+./src/HTManager.d \
 ./src/Server.d \
 ./src/StateTable.d \
 ./src/Ui.d \

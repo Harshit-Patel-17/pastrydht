@@ -36,7 +36,7 @@ int Node::setNode(string nodeIp, string port) {
 	crc_32_type crc;
 	char crcString[9];
 	crc.process_bytes((nodeIp + port).data(), (nodeIp + port).size());
-	sprintf(crcString, "%x", crc.checksum());
+	sprintf(crcString, "%08x", crc.checksum());
 	this->nodeId = crcString;
 
 	//Register signals and signal handler

@@ -50,7 +50,7 @@ public:
 	virtual void application(string s);
 };
 
-enum message_type {GET, PUT, STATE_TABLE, STATE_TABLE_A, STATE_TABLE_Z, STATE_TABLE_X, STATE_TABLE_AZ, JOIN, JOIN_A, VALUE};
+enum message_type {GET, PUT, STATE_TABLE, STATE_TABLE_A, STATE_TABLE_Z, STATE_TABLE_X, STATE_TABLE_AZ, JOIN, JOIN_A, VALUE, REDISTRIBUTE};
 
 struct KeyValue {
 	char key[9];

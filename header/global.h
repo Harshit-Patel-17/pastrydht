@@ -17,6 +17,7 @@
 #include <math.h>
 #include <boost/crc.hpp>
 #include <sys/socket.h>
+#include <map>
 #include "StateTable.h"
 #include "Ui.h"
 
@@ -36,6 +37,7 @@ public:
 	string nodeId;
 	string port;
 	StateTable stateTable;
+	map<string, string> HT;
 	int serverSockFd;
 	bool isNodeInitialized;
 	Node() {
@@ -45,11 +47,18 @@ public:
 	virtual ~Node() {}
 
 	int setNode(string nodeIp, string port);
-	void join(string destNodeIp, string destPort);
 	virtual void application(string s);
 };
 
-enum message_type {APP_DATA, STATE_TABLE, STATE_TABLE_A, STATE_TABLE_Z, STATE_TABLE_X, STATE_TABLE_AZ, JOIN, JOIN_A, RESPONSE};
+enum message_type {GET, PUT, STATE_TABLE, STATE_TABLE_A, STATE_TABLE_Z, STATE_TABLE_X, STATE_TABLE_AZ, JOIN, JOIN_A, VALUE};
+
+struct KeyValue {
+	char key[9];
+	char value[50];
+	char ip[16];
+	char port[6];
+	bool valueFound;
+};
 
 struct NodeIdentifier {
 	char ip[16];
@@ -70,6 +79,7 @@ struct Packet {
 	void print();
 	string serialize();
 	int deserialize(char *packet);
+	void build(string srcNodeId, string key, int hopCount, message_type type, string message);
 };
 
 extern Node localNode;

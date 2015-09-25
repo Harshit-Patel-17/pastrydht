@@ -55,13 +55,62 @@ void join(string ip, string port) {
 
 void put(string key, string value) {
 
-	cout << "Put command executed" << endl;
+	char *keyValueString;
+	KeyValue keyValue;
+	crc_32_type crc;
+	char crcString[9];
+	string message, response;
+	Packet packet;
+
+	//Compute CRC32 hash of key
+	crc.process_bytes(key.data(), key.size());
+	sprintf(crcString, "%x", crc.checksum());
+
+	cout << "Key: " << crcString << endl;
+
+	//Build KeyValue structure
+	strcpy(keyValue.ip, localNode.nodeIp.c_str());
+	strcpy(keyValue.port, localNode.port.c_str());
+	strcpy(keyValue.key, crcString);
+	strcpy(keyValue.value, value.c_str());
+
+	keyValueString = (char *) &(keyValue);
+	for(unsigned int i = 0; i < sizeof(KeyValue); i++)
+		message.push_back(keyValueString[i]);
+
+	packet.build(localNode.nodeId, crcString, 0, PUT, message);
+	client.send(localNode.nodeIp, localNode.port, packet.serialize(), &response);
+
+	cout << "Remote: " << response << endl;
 
 }
 
 void get(string key) {
 
-	cout << "Get command executed" << endl;
+	char *keyValueString;
+	KeyValue keyValue;
+	crc_32_type crc;
+	char crcString[9];
+	string message, response;
+	Packet packet;
+
+	//Compute CRC32 hash of key
+	crc.process_bytes(key.data(), key.size());
+	sprintf(crcString, "%x", crc.checksum());
+
+	//Build KeyValue structure
+	strcpy(keyValue.ip, localNode.nodeIp.c_str());
+	strcpy(keyValue.port, localNode.port.c_str());
+	strcpy(keyValue.key, crcString);
+
+	keyValueString = (char *) &(keyValue);
+	for(unsigned int i = 0; i < sizeof(KeyValue); i++)
+		message.push_back(keyValueString[i]);
+
+	packet.build(localNode.nodeId, crcString, 0, GET, message);
+	client.send(localNode.nodeIp, localNode.port, packet.serialize(), &response);
+
+	cout << "Remote: " << response << endl;
 
 }
 

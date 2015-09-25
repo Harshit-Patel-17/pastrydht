@@ -11,56 +11,6 @@ StateTableManager stateTableManager;
 
 void StateTableManager::updateLeafSet(pair<pair<string, StateTable*>, message_type> QElem) {
 
-	/*if(strcmp(QElem.first.first.c_str(), localNode.nodeId.c_str()) < 0) {
-		int minIndex = 0;
-		string minString;
-		for(int i = 0; i < L/2; i++) {
-			if(strlen(QElem.first.second->leafSet.closestIds[i].nodeId) != 0) {
-				if(minString.length() == 0) {
-					minIndex = i;
-					minString = QElem.first.second->leafSet.closestIds[i].nodeId;
-				} else {
-					if(strcmp(minString.c_str(), QElem.first.second->leafSet.closestIds[i].nodeId) > 0) {
-						minIndex = i;
-						minString = QElem.first.second->leafSet.closestIds[i].nodeId;
-					}
-				}
-				localNode.stateTable.leafSet.closestIds[i] = QElem.first.second->leafSet.closestIds[i];
-			}
-		}
-		localNode.stateTable.leafSet.closestIds[minIndex] = QElem.first.second->leafSet.closestIds[L/2];
-
-		for(int i = L/2 + 1; i < L+1; i++) {
-			if(strlen(QElem.first.second->leafSet.closestIds[i].nodeId) != 0) {
-				localNode.stateTable.leafSet.closestIds[i] = QElem.first.second->leafSet.closestIds[i];
-			}
-		}
-	} else {
-		int maxIndex = L/2 + 1;
-		string maxString;
-		for(int i = L/2 + 1; i < L+1; i++) {
-			if(strlen(QElem.first.second->leafSet.closestIds[i].nodeId) != 0) {
-				if(maxString.length() == 0) {
-					maxIndex = i;
-					maxString = QElem.first.second->leafSet.closestIds[i].nodeId;
-				} else {
-					if(strcmp(maxString.c_str(), QElem.first.second->leafSet.closestIds[i].nodeId) < 0) {
-						maxIndex = i;
-						maxString = QElem.first.second->leafSet.closestIds[i].nodeId;
-					}
-				}
-				localNode.stateTable.leafSet.closestIds[i] = QElem.first.second->leafSet.closestIds[i];
-			}
-		}
-		localNode.stateTable.leafSet.closestIds[maxIndex] = QElem.first.second->leafSet.closestIds[L/2];
-
-		for(int i = 0; i < L/2; i++) {
-			if(strlen(QElem.first.second->leafSet.closestIds[i].nodeId) != 0) {
-				localNode.stateTable.leafSet.closestIds[i] = QElem.first.second->leafSet.closestIds[i];
-			}
-		}
-	}*/
-
 	for(int i = 0; i < L+1; i++) {
 		if(strlen(QElem.first.second->leafSet.closestIds[i].nodeId) != 0)
 			updateLeafSet(QElem.first.second->leafSet.closestIds[i]);
@@ -118,8 +68,36 @@ void StateTableManager::updateLeafSet(cell nodeCell) {
 
 void StateTableManager::updateNeighbourhoodSet(pair<pair<string, StateTable*>, message_type> QElem) {
 
-	for(int i = 0; i < M; i++)
-		localNode.stateTable.neighbourhoodSet.closestNeighbours[i] = QElem.first.second->neighbourhoodSet.closestNeighbours[i];
+	for(int i = 0; i < M; i++) {
+		if(strlen(QElem.first.second->neighbourhoodSet.closestNeighbours[i].nodeId) != 0)
+			updateNeighbourhoodSet(QElem.first.second->neighbourhoodSet.closestNeighbours[i]);
+	}
+
+}
+
+void StateTableManager::updateNeighbourhoodSet(cell nodeCell) {
+
+	unsigned int localNodeId, nodeId, nodeCellNodeId;
+	sscanf(localNode.nodeId.c_str(), "%x", &localNodeId);
+
+	unsigned int maxIndex, maxDifference = 0;
+	for(int i = 0; i < M; i++) {
+		if(strlen(localNode.stateTable.neighbourhoodSet.closestNeighbours[i].nodeId) != 0) {
+			sscanf(localNode.stateTable.neighbourhoodSet.closestNeighbours[i].nodeId, "%x", &nodeId);
+			if((nodeId ^ localNodeId) > maxDifference) {
+				maxDifference = nodeId ^ localNodeId;
+				maxIndex = i;
+			}
+		} else {
+			localNode.stateTable.neighbourhoodSet.closestNeighbours[i] = nodeCell;
+			return;
+		}
+	}
+
+	sscanf(localNode.stateTable.neighbourhoodSet.closestNeighbours[maxIndex].nodeId, "%x", &nodeId);
+	sscanf(nodeCell.nodeId, "%x", &nodeCellNodeId);
+	if((nodeId ^ localNodeId) > (nodeCellNodeId ^ localNodeId))
+		localNode.stateTable.neighbourhoodSet.closestNeighbours[maxIndex] = nodeCell;
 
 }
 
@@ -127,7 +105,7 @@ bool StateTableManager::allStateTableReceived() {
 
 	int maxHopCount = hopCountVector[0];
 
-	for(int i = 0; i < hopCountVector.size(); i++)
+	for(unsigned int i = 0; i < hopCountVector.size(); i++)
 		maxHopCount = max(maxHopCount, hopCountVector[i]);
 
 	return maxHopCount == hopCountVector.size();
@@ -152,6 +130,7 @@ StateTableManager::~StateTableManager() {
 }
 
 void StateTableManager::joinPhase1(string destNodeIp, string destPort) {
+
 	Packet packet;
 	packet.header.srcNodeId = localNode.nodeId;
 	packet.header.key = localNode.nodeId;
@@ -171,13 +150,15 @@ void StateTableManager::joinPhase1(string destNodeIp, string destPort) {
 
 	string message = packet.serialize();
 	string response;
-	client.send(destNodeIp, destPort, message, &response);
+	cout << "Phase1" << endl;
+	cout << client.send(destNodeIp, destPort, message, &response) << endl;
 
 	cout<< "Remote: " << response << endl;
 }
 
 void StateTableManager::joinPhase2() {
 
+	cout << "Phase2" << endl;
 	Packet packet;
 	packet.header.messageLength = sizeof(StateTable);
 	packet.header.srcNodeId = localNode.nodeId;
@@ -295,6 +276,7 @@ void *stateTableManagerRunner(void *arg) {
 
 			case STATE_TABLE_X:
 				stateTableManager.updateLeafSet(QElem.first.second->leafSet.closestIds[L/2]);
+				stateTableManager.updateNeighbourhoodSet(QElem.first.second->leafSet.closestIds[L/2]);
 				break;
 
 			case STATE_TABLE_AZ:

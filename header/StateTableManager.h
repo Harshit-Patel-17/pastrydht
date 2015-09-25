@@ -32,6 +32,7 @@ public:
 	void updateLeafSet(pair<pair<string, StateTable*>, message_type> QElem);
 	void updateLeafSet(cell nodeCell);
 	void updateNeighbourhoodSet(pair<pair<string, StateTable*>, message_type> QElem);
+	void updateNeighbourhoodSet(cell nodeCell);
 	bool allStateTableReceived();
 	void clearAll();
 };

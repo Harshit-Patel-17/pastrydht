@@ -107,6 +107,17 @@ int Packet::deserialize(char *packet) {
 	return 0;
 }
 
+void Packet::build(string srcNodeId, string key, int hopCount, message_type type, string message) {
+
+	this->header.srcNodeId = srcNodeId;
+	this->header.key = key;
+	this->header.hopCount = hopCount;
+	this->header.type = type;
+	this->header.messageLength = message.length();
+	this->message = message;
+
+}
+
 int shl(string s1, string s2) {
 
 	int prefixLength = 0;

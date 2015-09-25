@@ -35,20 +35,46 @@ cell Client::forward(string key) {
 		return localNode.stateTable.leafSet.closestIds[closestNodeIdIndex];
 	}
 
-	//Find entry in routing table
 	int l = shl(key, localNode.nodeId);
+
+	//Find entry in routing table
 	int row = l, column = (key[l] < 58) ? (key[l] - '0') : (key[l] - 'a' + 10);
 	if(strlen(localNode.stateTable.routingTable.entries[row][column].nodeId) != 0) {
 		return localNode.stateTable.routingTable.entries[row][column];
 	}
 
 	//Rare case
-	cell tempCell;
-	strcpy(tempCell.ip, localNode.nodeIp.c_str());
-	strcpy(tempCell.nodeId, localNode.nodeId.c_str());
-	strcpy(tempCell.port, localNode.port.c_str());
+	unsigned int localNodeId, destNodeId, cellNodeId;
+	sscanf(localNode.nodeId.c_str(), "%x", &localNodeId);
+	sscanf(key.c_str(), "%x", &destNodeId);
+	//Find in leaf set
+	for(int i = 0; i < L+1; i++) {
+		if(strlen(localNode.stateTable.leafSet.closestIds[i].nodeId) != 0) {
+			sscanf(localNode.stateTable.leafSet.closestIds[i].nodeId, "%x", &cellNodeId);
+			if(shl(localNode.stateTable.leafSet.closestIds[i].nodeId, key) >= l && (cellNodeId ^ destNodeId) < (localNodeId ^ destNodeId))
+				return localNode.stateTable.leafSet.closestIds[i];
+		}
+	}
+	//Find in routing table
+	for(int i = 0; i < keyLength; i++) {
+		for(int j = 0; j < 16; j++) {
+			if(strlen(localNode.stateTable.routingTable.entries[i][j].nodeId) != 0) {
+				sscanf(localNode.stateTable.routingTable.entries[i][j].nodeId, "%x", &cellNodeId);
+				if(shl(localNode.stateTable.routingTable.entries[i][j].nodeId, key) >= l && (cellNodeId ^ destNodeId) < (localNodeId ^ destNodeId))
+					return localNode.stateTable.routingTable.entries[i][j];
+			}
+		}
+	}
+	//Find in neighborhood set
+	for(int i = 0; i < M; i++) {
+		if(strlen(localNode.stateTable.neighbourhoodSet.closestNeighbours[i].nodeId) != 0) {
+			sscanf(localNode.stateTable.neighbourhoodSet.closestNeighbours[i].nodeId, "%x", &cellNodeId);
+			if(shl(localNode.stateTable.neighbourhoodSet.closestNeighbours[i].nodeId, key) >= l && (cellNodeId ^ destNodeId) < (localNodeId ^ destNodeId))
+				return localNode.stateTable.neighbourhoodSet.closestNeighbours[i];
+		}
+	}
 
-	return tempCell;
+	return localNode.stateTable.leafSet.closestIds[L/2];
 }
 
 Client::Client() {
@@ -105,10 +131,7 @@ string Client::send(string key, string message, message_type type, int hopCount)
 
 	cell nextHop = forward(key);
 
-	/*cout << "IP: " << nextHop.ip << endl;
-	cout << "Port: " << nextHop.port << endl;
-	cout << "NodeId: " << nextHop.nodeId << endl;
-	cout << "Local: " << localNode.nodeId << endl;*/
+	cout << "Next hop: " << nextHop.nodeId << endl;
 
 	if(strcmp(nextHop.nodeId, localNode.nodeId.c_str()) == 0)
 		return "Destination reached";
@@ -126,7 +149,7 @@ string Client::send(string key, string message, message_type type, int hopCount)
 	packet.header.messageLength = message.length();
 	packet.message = message;
 	message = packet.serialize();
-	send(ip, port, message, &response);
+	cout << send(ip, port, message, &response) << endl;
 
 	return response;
 

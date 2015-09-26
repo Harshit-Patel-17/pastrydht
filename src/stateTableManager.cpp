@@ -8,6 +8,9 @@
 #include "../header/StateTableManager.h"
 
 StateTableManager stateTableManager;
+pthread_mutex_t lock;
+pthread_mutex_t qaccess;
+pthread_mutex_t htaccess;
 
 void StateTableManager::updateLeafSet(pair<pair<string, StateTable*>, message_type> QElem) {
 
@@ -252,16 +255,16 @@ void StateTableManager::redistributePhase() {
 	Packet packet;
 	string response;
 	if(strlen(maxInLeft.nodeId) != 0) {
+		cout << "REDISTRUBUTION REQUEST SENT: " << maxInLeft.nodeId << endl;
 		packet.build(localNode.nodeId, maxInLeft.nodeId, 0, REDISTRIBUTE, "");
 		client.send(maxInLeft.ip, maxInLeft.port, packet.serialize(), &response);
 	}
 	if(strlen(minInRight.nodeId) != 0) {
+		cout << "REDISTRUBUTION REQUEST SENT: " << minInRight.nodeId << endl;
 		packet.build(localNode.nodeId, minInRight.nodeId, 0, REDISTRIBUTE, "");
 		client.send(minInRight.ip, minInRight.port, packet.serialize(), &response);
 	}
 }
-
-pthread_mutex_t lock;
 
 void StateTableManager::insertInQ(string nodeId, StateTable stateTable, message_type type) {
 
@@ -283,7 +286,9 @@ void *stateTableManagerRunner(void *arg) {
 			pthread_mutex_lock(&lock);
 		else {
 			pair<pair<string, StateTable*>, message_type> QElem = Q->front();
+			pthread_mutex_lock(&qaccess);
 			Q->pop();
+			pthread_mutex_unlock(&qaccess);
 
 			cout << "NodeId: " << QElem.first.first << endl;
 			cout << "Type: " << QElem.second << endl;
@@ -296,11 +301,24 @@ void *stateTableManagerRunner(void *arg) {
 			}
 
 			switch(QElem.second) {
+			case STATE_TABLE:
+				stateTableManager.hopCountVector.push_back(QElem.first.second->hopCount);
+				if(stateTableManager.zReceived) {
+					if(stateTableManager.allStateTableReceived()) {
+						cout << "REDISTRIBUTION STARTED" << endl;
+						stateTableManager.joinPhase2();
+						stateTableManager.clearAll();
+						stateTableManager.redistributePhase();
+					}
+				}
+				break;
+
 			case STATE_TABLE_A:
 				stateTableManager.updateNeighbourhoodSet(QElem);
 				stateTableManager.hopCountVector.push_back(QElem.first.second->hopCount);
 				if(stateTableManager.zReceived) {
 					if(stateTableManager.allStateTableReceived()) {
+						cout << "REDISTRIBUTION STARTED" << endl;
 						stateTableManager.joinPhase2();
 						stateTableManager.clearAll();
 						stateTableManager.redistributePhase();
@@ -313,6 +331,7 @@ void *stateTableManagerRunner(void *arg) {
 				stateTableManager.zReceived = true;
 				stateTableManager.hopCountVector.push_back(QElem.first.second->hopCount);
 				if(stateTableManager.allStateTableReceived()) {
+					cout << "REDISTRIBUTION STARTED" << endl;
 					stateTableManager.joinPhase2();
 					stateTableManager.clearAll();
 					stateTableManager.redistributePhase();
@@ -330,6 +349,7 @@ void *stateTableManagerRunner(void *arg) {
 				stateTableManager.zReceived = true;
 				stateTableManager.hopCountVector.push_back(QElem.first.second->hopCount);
 				if(stateTableManager.allStateTableReceived()) {
+					cout << "REDISTRIBUTION STARTED" << endl;
 					stateTableManager.joinPhase2();
 					stateTableManager.clearAll();
 					stateTableManager.redistributePhase();

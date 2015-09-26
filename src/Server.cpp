@@ -17,15 +17,166 @@ Server::~Server() {
 
 }
 
+pthread_mutex_t threadCreation;
+
+
+void *communicate(void *arg) {
+
+	int *retVal = new int;
+	int newSockFd = *(int *)arg;
+	const unsigned int bufferSize = 8*1024;
+	char buffer[bufferSize];
+	int count;
+
+	pthread_mutex_unlock(&threadCreation);
+
+	Packet packetReceived, packetToBeSentBack;
+	string response = "";
+	NodeIdentifier *nodeIdentifier = new NodeIdentifier;
+	KeyValue *keyValue = new KeyValue;
+	StateTable *stateTable = new StateTable;
+	char *stateTableString, *keyValueString;
+
+	//Start communicating
+	bzero(buffer, bufferSize);
+	count = read(newSockFd, buffer, bufferSize);
+	if(count < 0) {
+		*retVal = SOCK_READ_ERROR;
+		close(newSockFd);
+		pthread_exit((void *) retVal);
+	}
+
+	packetReceived.deserialize(buffer);
+	bzero(buffer, bufferSize);
+	string status;
+	message_type type = packetReceived.header.type;
+	map<string, string> ::iterator it;
+
+	switch(type)
+	{
+	case JOIN:
+	case JOIN_A:
+		strcpy(buffer, "join packet received");
+		count = write(newSockFd, buffer, strlen(buffer));
+		//Forward JOIN in case JOIN_A is received
+		//Send back STATE_TABLE_A in case JOIN_A is received
+		if(type == JOIN)
+			packetToBeSentBack.header.type = STATE_TABLE;
+		else {
+			packetToBeSentBack.header.type = STATE_TABLE_A;
+			packetReceived.header.type = JOIN;
+		}
+
+		// forward the message to the next hop
+		status = client.send(packetReceived.header.key, packetReceived.message, packetReceived.header.type, packetReceived.header.hopCount + 1);
+		if(status.compare("Destination reached") == 0) {
+			if(type == JOIN_A)
+				packetToBeSentBack.header.type = STATE_TABLE_AZ;
+			else
+				packetToBeSentBack.header.type = STATE_TABLE_Z;
+		}
+
+		// send the packet(with state table) back to the newly joining node
+		packetToBeSentBack.header.srcNodeId = localNode.nodeId;
+		packetToBeSentBack.header.key = packetReceived.header.key;
+		packetToBeSentBack.header.hopCount = 0;
+		packetToBeSentBack.header.messageLength = sizeof(StateTable);
+		localNode.stateTable.hopCount = packetReceived.header.hopCount + 1;
+		stateTableString = (char *)&(localNode.stateTable);
+		packetToBeSentBack.message = "";
+		for(unsigned int i = 0; i < sizeof(StateTable); i++)
+			packetToBeSentBack.message.push_back(stateTableString[i]);
+		nodeIdentifier = (NodeIdentifier *)packetReceived.message.c_str();
+		client.send(nodeIdentifier->ip,nodeIdentifier->port,packetToBeSentBack.serialize(),&response);
+		cout<<"Remote: " << response << endl;
+		break;
+
+	case STATE_TABLE:
+	case STATE_TABLE_A:
+	case STATE_TABLE_Z:
+	case STATE_TABLE_X:
+	case STATE_TABLE_AZ:
+		strcpy(buffer, "State table received");
+		count = write(newSockFd, buffer, strlen(buffer));
+		stateTable = (StateTable *) packetReceived.message.c_str();
+		pthread_mutex_lock(&qaccess);
+		stateTableManager.insertInQ(packetReceived.header.srcNodeId, *stateTable, packetReceived.header.type);
+		pthread_mutex_unlock(&qaccess);
+		break;
+
+	case PUT:
+		strcpy(buffer, "put packet received");
+		count = write(newSockFd, buffer, strlen(buffer));
+		status = client.send(packetReceived.header.key, packetReceived.message, packetReceived.header.type, packetReceived.header.hopCount + 1);
+		keyValue = (KeyValue *) packetReceived.message.c_str();
+		if(status.compare("Destination reached") == 0) {
+			pthread_mutex_lock(&htaccess);
+			localNode.HT[keyValue->key] = keyValue->value;
+			pthread_mutex_unlock(&htaccess);
+			cout << "Put success" << endl;
+		}
+		for(it = localNode.HT.begin(); it != localNode.HT.end(); it++)
+			cout << it->first << ":" << it->second << endl;
+		break;
+
+	case GET:
+		strcpy(buffer, "get packet received");
+		count = write(newSockFd, buffer, strlen(buffer));
+		cout << packetReceived.header.type << endl;
+		status = client.send(packetReceived.header.key, packetReceived.message, packetReceived.header.type, packetReceived.header.hopCount + 1);
+		keyValue = (KeyValue *) packetReceived.message.c_str();
+		if(status.compare("Destination reached") == 0) {
+			packetToBeSentBack.header.srcNodeId = localNode.nodeId;
+			packetToBeSentBack.header.key = packetReceived.header.srcNodeId;
+			packetToBeSentBack.header.hopCount = 0;
+			packetToBeSentBack.header.type = VALUE;
+			packetToBeSentBack.header.messageLength = sizeof(KeyValue);
+			if(localNode.HT.find(keyValue->key) == localNode.HT.end()) {
+				keyValue->valueFound = false;
+			} else {
+				keyValue->valueFound = true;
+				strcpy(keyValue->value, localNode.HT[keyValue->key].c_str());
+				cout << "Get success" << endl;
+			}
+			keyValueString = (char *) keyValue;
+			packetToBeSentBack.message = "";
+			for(unsigned int i = 0; i < sizeof(KeyValue); i++)
+				packetToBeSentBack.message.push_back(keyValueString[i]);
+			cout << keyValue->ip << ":" << keyValue->port << endl;
+			client.send(keyValue->ip,keyValue->port,packetToBeSentBack.serialize(),&response);
+			cout<<"Remote: " << response << endl;
+		}
+		break;
+
+	case VALUE:
+		strcpy(buffer, "value packet received");
+		count = write(newSockFd, buffer, strlen(buffer));
+		keyValue = (KeyValue *) packetReceived.message.c_str();
+		if(keyValue->valueFound)
+			cout << "Value: " << keyValue->value << endl;
+		else
+			cout << "Key not found!" << endl;
+		break;
+
+	case REDISTRIBUTE:
+		cout << "REDISTRIBUTION REQUEST RECEIVED" << endl;
+		strcpy(buffer, "redistribute packet received");
+		count = write(newSockFd, buffer, strlen(buffer));
+		htManager.redistribute();
+		break;
+	}
+
+	close(newSockFd);
+	pthread_exit(0);
+}
+
 void *serverRunner(void *arg) {
 
 	int *retVal = new int;
 
 	Node *node = (Node *) arg;
-	int sockFd, newSockFd, port, count;
+	int sockFd, newSockFd, port;
 	unsigned int clientLen;
-	const unsigned int bufferSize = 8192;
-	char buffer[bufferSize];
 	struct sockaddr_in serverAddr, clientAddr;
 
 	//Create TCP socket
@@ -50,19 +201,13 @@ void *serverRunner(void *arg) {
 		pthread_exit((void *) retVal);
 	}
 
-	Packet packetReceived, packetToBeSentBack;
-	string response = "";
-	NodeIdentifier *nodeIdentifier = new NodeIdentifier;
-	KeyValue *keyValue = new KeyValue;
-	StateTable *stateTable = new StateTable;
-	char *stateTableString, *keyValueString;
-
 	while(1) {
 		//Start listening to incoming connections
 		listen(sockFd, 5);
 		clientLen = sizeof(clientAddr);
 
 		//Accept connection from client
+		pthread_mutex_lock(&threadCreation);
 		newSockFd = accept(sockFd, (struct sockaddr *) &clientAddr, &clientLen);
 		if(newSockFd < 0) {
 			*retVal = SOCK_ACCEPT_ERROR;
@@ -70,131 +215,9 @@ void *serverRunner(void *arg) {
 			pthread_exit((void *) retVal);
 		}
 
-		//Start communicating
-		bzero(buffer, bufferSize);
-		count = read(newSockFd, buffer, bufferSize);
-		if(count < 0) {
-			*retVal = SOCK_READ_ERROR;
-			close(sockFd);
-			close(newSockFd);
-			pthread_exit((void *) retVal);
-		}
+		pthread_t communicationThreadId;
+		pthread_create(&communicationThreadId, NULL, communicate, (void *) &newSockFd);
 
-		packetReceived.deserialize(buffer);
-		bzero(buffer, bufferSize);
-		string status;
-		message_type type = packetReceived.header.type;
-		map<string, string> ::iterator it;
-
-		switch(type)
-		{
-		case JOIN:
-		case JOIN_A:
-			strcpy(buffer, "join packet received");
-			count = write(newSockFd, buffer, strlen(buffer));
-			//Forward JOIN in case JOIN_A is received
-			//Send back STATE_TABLE_A in case JOIN_A is received
-			if(type == JOIN)
-				packetToBeSentBack.header.type = STATE_TABLE;
-			else {
-				packetToBeSentBack.header.type = STATE_TABLE_A;
-				packetReceived.header.type = JOIN;
-			}
-
-			// forward the message to the next hop
-			status = client.send(packetReceived.header.key, packetReceived.message, packetReceived.header.type, packetReceived.header.hopCount + 1);
-			if(status.compare("Destination reached") == 0) {
-				if(type == JOIN_A)
-					packetToBeSentBack.header.type = STATE_TABLE_AZ;
-				else
-					packetToBeSentBack.header.type = STATE_TABLE_Z;
-			}
-
-			// send the packet(with state table) back to the newly joining node
-			packetToBeSentBack.header.srcNodeId = localNode.nodeId;
-			packetToBeSentBack.header.key = packetReceived.header.key;
-			packetToBeSentBack.header.hopCount = 0;
-			packetToBeSentBack.header.messageLength = sizeof(StateTable);
-			localNode.stateTable.hopCount = packetReceived.header.hopCount + 1;
-			stateTableString = (char *)&(localNode.stateTable);
-			packetToBeSentBack.message = "";
-			for(unsigned int i = 0; i < sizeof(StateTable); i++)
-				packetToBeSentBack.message.push_back(stateTableString[i]);
-			nodeIdentifier = (NodeIdentifier *)packetReceived.message.c_str();
-			client.send(nodeIdentifier->ip,nodeIdentifier->port,packetToBeSentBack.serialize(),&response);
-			cout<<"Remote: " << response << endl;
-			break;
-
-		case STATE_TABLE:
-		case STATE_TABLE_A:
-		case STATE_TABLE_Z:
-		case STATE_TABLE_X:
-		case STATE_TABLE_AZ:
-			strcpy(buffer, "State table received");
-			count = write(newSockFd, buffer, strlen(buffer));
-			stateTable = (StateTable *) packetReceived.message.c_str();
-			stateTableManager.insertInQ(packetReceived.header.srcNodeId, *stateTable, packetReceived.header.type);
-			break;
-
-		case PUT:
-			strcpy(buffer, "put packet received");
-			count = write(newSockFd, buffer, strlen(buffer));
-			status = client.send(packetReceived.header.key, packetReceived.message, packetReceived.header.type, packetReceived.header.hopCount + 1);
-			keyValue = (KeyValue *) packetReceived.message.c_str();
-			if(status.compare("Destination reached") == 0) {
-				localNode.HT[keyValue->key] = keyValue->value;
-				cout << "Put success" << endl;
-			}
-			for(it = localNode.HT.begin(); it != localNode.HT.end(); it++)
-				cout << it->first << ":" << it->second << endl;
-			break;
-
-		case GET:
-			strcpy(buffer, "get packet received");
-			count = write(newSockFd, buffer, strlen(buffer));
-			cout << packetReceived.header.type << endl;
-			status = client.send(packetReceived.header.key, packetReceived.message, packetReceived.header.type, packetReceived.header.hopCount + 1);
-			keyValue = (KeyValue *) packetReceived.message.c_str();
-			if(status.compare("Destination reached") == 0) {
-				packetToBeSentBack.header.srcNodeId = localNode.nodeId;
-				packetToBeSentBack.header.key = packetReceived.header.srcNodeId;
-				packetToBeSentBack.header.hopCount = 0;
-				packetToBeSentBack.header.type = VALUE;
-				packetToBeSentBack.header.messageLength = sizeof(KeyValue);
-				if(localNode.HT.find(keyValue->key) == localNode.HT.end()) {
-					keyValue->valueFound = false;
-				} else {
-					keyValue->valueFound = true;
-					strcpy(keyValue->value, localNode.HT[keyValue->key].c_str());
-					cout << "Get success" << endl;
-				}
-				keyValueString = (char *) keyValue;
-				packetToBeSentBack.message = "";
-				for(unsigned int i = 0; i < sizeof(KeyValue); i++)
-					packetToBeSentBack.message.push_back(keyValueString[i]);
-				cout << keyValue->ip << ":" << keyValue->port << endl;
-				client.send(keyValue->ip,keyValue->port,packetToBeSentBack.serialize(),&response);
-				cout<<"Remote: " << response << endl;
-			}
-			break;
-
-		case VALUE:
-			strcpy(buffer, "value packet received");
-			count = write(newSockFd, buffer, strlen(buffer));
-			keyValue = (KeyValue *) packetReceived.message.c_str();
-			if(keyValue->valueFound)
-				cout << "Value: " << keyValue->value << endl;
-			else
-				cout << "Key not found!" << endl;
-			break;
-
-		case REDISTRIBUTE:
-			cout << "REDISTRIBUTE REQUEST RECIEVED" << endl;
-			strcpy(buffer, "redistribute packet received");
-			count = write(newSockFd, buffer, strlen(buffer));
-			htManager.redistribute();
-			break;
-		}
 		//strcpy(buffer, packetToBeSent.serialize());
 		//count = write(newSockFd, buffer, strlen(buffer));
 		/*if(count < 0) {
@@ -204,7 +227,7 @@ void *serverRunner(void *arg) {
 			pthread_exit((void *) retVal);
 		}*/
 
-		close(newSockFd);
+		//close(newSockFd);
 	}
 	close(sockFd);
 	localNode.serverSockFd = -1; //Server socket closed

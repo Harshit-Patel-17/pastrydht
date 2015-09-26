@@ -40,5 +40,8 @@ public:
 };
 
 extern StateTableManager stateTableManager;
+extern pthread_mutex_t lock;
+extern pthread_mutex_t qaccess;
+extern pthread_mutex_t htaccess;
 
 #endif /* HEADER_STATETABLEMANAGER_H_ */

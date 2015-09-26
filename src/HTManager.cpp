@@ -39,12 +39,14 @@ void HTManager::redistribute() {
 		strcpy(keyValue.value, temp[it->first].c_str());
 
 		keyValueString = (char *) &(keyValue);
+		message = "";
 		for(unsigned int i = 0; i < sizeof(KeyValue); i++)
 			message.push_back(keyValueString[i]);
 
 		packet.build(localNode.nodeId, it->first, 0, PUT, message);
-		cout << "PUTTING KEY" << endl;
-		client.send(localNode.nodeIp, localNode.port, packet.serialize(), &response);
+		cout << "PUTTING KEY: " << it->first << ":" << it->second << endl;
+		cout << client.send(localNode.nodeIp, localNode.port, packet.serialize(), &response) << endl;
+		cout << "SENT" << endl;
 	}
 
 }

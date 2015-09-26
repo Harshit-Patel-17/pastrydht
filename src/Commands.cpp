@@ -107,9 +107,13 @@ void get(string key) {
 	for(unsigned int i = 0; i < sizeof(KeyValue); i++)
 		message.push_back(keyValueString[i]);
 
-	cell nextHop = client.forward(crcString);
+	packet.build(localNode.nodeId, crcString, 0, GET, message);
+	client.send(localNode.nodeIp, localNode.port, packet.serialize(), &response);
+	cout << "Remote: " << response << endl;
 
-	if(strcmp(nextHop.nodeId, localNode.nodeId.c_str()) == 0) {
+	//cell nextHop = client.forward(crcString);
+
+	/*if(strcmp(nextHop.nodeId, localNode.nodeId.c_str()) == 0) {
 		if(localNode.HT.find(crcString) == localNode.HT.end()) {
 			cout << "Key not found!" << endl;
 		} else {
@@ -120,7 +124,7 @@ void get(string key) {
 		packet.build(localNode.nodeId, crcString, 0, GET, message);
 		client.send(localNode.nodeIp, localNode.port, packet.serialize(), &response);
 		cout << "Remote: " << response << endl;
-	}
+	}*/
 
 }
 

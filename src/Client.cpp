@@ -131,8 +131,6 @@ string Client::send(string key, string message, message_type type, int hopCount)
 
 	cell nextHop = forward(key);
 
-	cout << "Next hop: " << nextHop.nodeId << endl;
-
 	if(strcmp(nextHop.nodeId, localNode.nodeId.c_str()) == 0)
 		return "Destination reached";
 
@@ -142,14 +140,8 @@ string Client::send(string key, string message, message_type type, int hopCount)
 
 	//Construct a packet to be sent
 	Packet packet;
-	packet.header.srcNodeId = localNode.nodeId;
-	packet.header.key = key;
-	packet.header.hopCount = hopCount;
-	packet.header.type = type;
-	packet.header.messageLength = message.length();
-	packet.message = message;
-	message = packet.serialize();
-	cout << send(ip, port, message, &response) << endl;
+	packet.build(localNode.nodeId, key, hopCount, type, message);
+	send(ip, port, packet.serialize(), &response);
 
 	return response;
 

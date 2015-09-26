@@ -153,15 +153,12 @@ void StateTableManager::joinPhase1(string destNodeIp, string destPort) {
 
 	string message = packet.serialize();
 	string response;
-	cout << "Phase1" << endl;
-	cout << client.send(destNodeIp, destPort, message, &response) << endl;
+	client.send(destNodeIp, destPort, message, &response);
 
-	cout<< "Remote: " << response << endl;
 }
 
 void StateTableManager::joinPhase2() {
 
-	cout << "Phase2" << endl;
 	Packet packet;
 	packet.header.messageLength = sizeof(StateTable);
 	packet.header.srcNodeId = localNode.nodeId;
@@ -179,12 +176,10 @@ void StateTableManager::joinPhase2() {
 		if(strlen(localNode.stateTable.leafSet.closestIds[i].nodeId) != 0 && i != L/2 &&
 				hasBeenSentStateTable.find(localNode.stateTable.leafSet.closestIds[i].nodeId) == hasBeenSentStateTable.end()) {
 			packet.header.key = localNode.stateTable.leafSet.closestIds[i].nodeId;
-			cout << localNode.stateTable.leafSet.closestIds[i].ip << ":" << localNode.stateTable.leafSet.closestIds[i].port << endl;
 			ip = localNode.stateTable.leafSet.closestIds[i].ip;
 			port = localNode.stateTable.leafSet.closestIds[i].port;
 			client.send(ip, port, packet.serialize(), &response);
 			hasBeenSentStateTable[localNode.stateTable.leafSet.closestIds[i].nodeId] = true;
-			cout << response << endl;
 		}
 	}
 
@@ -199,7 +194,6 @@ void StateTableManager::joinPhase2() {
 				port = localNode.stateTable.routingTable.entries[i][j].port;
 				client.send(ip, port, packet.serialize(), &response);
 				hasBeenSentStateTable[localNode.stateTable.routingTable.entries[i][j].nodeId] = true;
-				cout << response << endl;
 			}
 		}
 	}
@@ -214,7 +208,6 @@ void StateTableManager::joinPhase2() {
 				port = localNode.stateTable.neighbourhoodSet.closestNeighbours[i].port;
 				client.send(ip, port, packet.serialize(), &response);
 				hasBeenSentStateTable[localNode.stateTable.neighbourhoodSet.closestNeighbours[i].nodeId] = true;
-				cout << response << endl;
 			}
 		}
 	}
@@ -255,12 +248,10 @@ void StateTableManager::redistributePhase() {
 	Packet packet;
 	string response;
 	if(strlen(maxInLeft.nodeId) != 0) {
-		cout << "REDISTRUBUTION REQUEST SENT: " << maxInLeft.nodeId << endl;
 		packet.build(localNode.nodeId, maxInLeft.nodeId, 0, REDISTRIBUTE, "");
 		client.send(maxInLeft.ip, maxInLeft.port, packet.serialize(), &response);
 	}
 	if(strlen(minInRight.nodeId) != 0) {
-		cout << "REDISTRUBUTION REQUEST SENT: " << minInRight.nodeId << endl;
 		packet.build(localNode.nodeId, minInRight.nodeId, 0, REDISTRIBUTE, "");
 		client.send(minInRight.ip, minInRight.port, packet.serialize(), &response);
 	}
@@ -279,7 +270,6 @@ void StateTableManager::insertInQ(string nodeId, StateTable stateTable, message_
 
 void *stateTableManagerRunner(void *arg) {
 
-	cout << "In runner" << endl;
 	queue< pair<pair<string, StateTable*>, message_type> > *Q = (queue< pair<pair<string, StateTable*>, message_type> > *)arg;
 	while(1) {
 		if(Q->size() == 0)
@@ -289,10 +279,6 @@ void *stateTableManagerRunner(void *arg) {
 			pthread_mutex_lock(&qaccess);
 			Q->pop();
 			pthread_mutex_unlock(&qaccess);
-
-			cout << "NodeId: " << QElem.first.first << endl;
-			cout << "Type: " << QElem.second << endl;
-			cout << "Hop Count: " << QElem.first.second->hopCount << endl;
 
 			int l = shl(localNode.nodeId, QElem.first.first);
 			for(int i = 0; i < 16; i++) {
@@ -305,7 +291,6 @@ void *stateTableManagerRunner(void *arg) {
 				stateTableManager.hopCountVector.push_back(QElem.first.second->hopCount);
 				if(stateTableManager.zReceived) {
 					if(stateTableManager.allStateTableReceived()) {
-						cout << "REDISTRIBUTION STARTED" << endl;
 						stateTableManager.joinPhase2();
 						stateTableManager.clearAll();
 						stateTableManager.redistributePhase();
@@ -318,7 +303,6 @@ void *stateTableManagerRunner(void *arg) {
 				stateTableManager.hopCountVector.push_back(QElem.first.second->hopCount);
 				if(stateTableManager.zReceived) {
 					if(stateTableManager.allStateTableReceived()) {
-						cout << "REDISTRIBUTION STARTED" << endl;
 						stateTableManager.joinPhase2();
 						stateTableManager.clearAll();
 						stateTableManager.redistributePhase();
@@ -331,7 +315,6 @@ void *stateTableManagerRunner(void *arg) {
 				stateTableManager.zReceived = true;
 				stateTableManager.hopCountVector.push_back(QElem.first.second->hopCount);
 				if(stateTableManager.allStateTableReceived()) {
-					cout << "REDISTRIBUTION STARTED" << endl;
 					stateTableManager.joinPhase2();
 					stateTableManager.clearAll();
 					stateTableManager.redistributePhase();
@@ -349,14 +332,12 @@ void *stateTableManagerRunner(void *arg) {
 				stateTableManager.zReceived = true;
 				stateTableManager.hopCountVector.push_back(QElem.first.second->hopCount);
 				if(stateTableManager.allStateTableReceived()) {
-					cout << "REDISTRIBUTION STARTED" << endl;
 					stateTableManager.joinPhase2();
 					stateTableManager.clearAll();
 					stateTableManager.redistributePhase();
 				}
 				break;
 			}
-			localNode.stateTable.print();
 		}
 	}
 

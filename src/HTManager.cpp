@@ -44,9 +44,7 @@ void HTManager::redistribute() {
 			message.push_back(keyValueString[i]);
 
 		packet.build(localNode.nodeId, it->first, 0, PUT, message);
-		cout << "PUTTING KEY: " << it->first << ":" << it->second << endl;
-		cout << client.send(localNode.nodeIp, localNode.port, packet.serialize(), &response) << endl;
-		cout << "SENT" << endl;
+		client.send(localNode.nodeIp, localNode.port, packet.serialize(), &response);
 	}
 
 }

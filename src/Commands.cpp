@@ -66,8 +66,6 @@ void put(string key, string value) {
 	crc.process_bytes(key.data(), key.size());
 	sprintf(crcString, "%08x", crc.checksum());
 
-	cout << "Key: " << crcString << endl;
-
 	//Build KeyValue structure
 	strcpy(keyValue.ip, localNode.nodeIp.c_str());
 	strcpy(keyValue.port, localNode.port.c_str());
@@ -80,8 +78,6 @@ void put(string key, string value) {
 
 	packet.build(localNode.nodeId, crcString, 0, PUT, message);
 	client.send(localNode.nodeIp, localNode.port, packet.serialize(), &response);
-
-	cout << "Remote: " << response << endl;
 
 }
 
@@ -109,22 +105,6 @@ void get(string key) {
 
 	packet.build(localNode.nodeId, crcString, 0, GET, message);
 	client.send(localNode.nodeIp, localNode.port, packet.serialize(), &response);
-	cout << "Remote: " << response << endl;
-
-	//cell nextHop = client.forward(crcString);
-
-	/*if(strcmp(nextHop.nodeId, localNode.nodeId.c_str()) == 0) {
-		if(localNode.HT.find(crcString) == localNode.HT.end()) {
-			cout << "Key not found!" << endl;
-		} else {
-			cout << "Get success" << endl;
-			cout << "Value: " << localNode.HT[crcString] << endl;
-		}
-	} else {
-		packet.build(localNode.nodeId, crcString, 0, GET, message);
-		client.send(localNode.nodeIp, localNode.port, packet.serialize(), &response);
-		cout << "Remote: " << response << endl;
-	}*/
 
 }
 

@@ -31,7 +31,7 @@ void *communicate(void *arg) {
 	pthread_mutex_unlock(&threadCreation);
 
 	Packet packetReceived, packetToBeSentBack;
-	string response = "";
+	string response, message;
 	NodeIdentifier *nodeIdentifier = new NodeIdentifier;
 	KeyValue *keyValue = new KeyValue;
 	StateTable *stateTable = new StateTable;
@@ -58,17 +58,17 @@ void *communicate(void *arg) {
 	case JOIN_A:
 		strcpy(buffer, "join packet received");
 		count = write(newSockFd, buffer, strlen(buffer));
-		//Forward JOIN in case JOIN_A is received
+
 		//Send back STATE_TABLE_A in case JOIN_A is received
 		if(type == JOIN)
 			packetToBeSentBack.header.type = STATE_TABLE;
 		else {
 			packetToBeSentBack.header.type = STATE_TABLE_A;
-			packetReceived.header.type = JOIN;
+			//packetReceived.header.type = JOIN;
 		}
 
 		// forward the message to the next hop
-		status = client.send(packetReceived.header.key, packetReceived.message, packetReceived.header.type, packetReceived.header.hopCount + 1);
+		status = client.send(packetReceived.header.key, packetReceived.message, JOIN, packetReceived.header.hopCount + 1);
 		if(status.compare("Destination reached") == 0) {
 			if(type == JOIN_A)
 				packetToBeSentBack.header.type = STATE_TABLE_AZ;
@@ -77,18 +77,14 @@ void *communicate(void *arg) {
 		}
 
 		// send the packet(with state table) back to the newly joining node
-		packetToBeSentBack.header.srcNodeId = localNode.nodeId;
-		packetToBeSentBack.header.key = packetReceived.header.key;
-		packetToBeSentBack.header.hopCount = 0;
-		packetToBeSentBack.header.messageLength = sizeof(StateTable);
 		localNode.stateTable.hopCount = packetReceived.header.hopCount + 1;
 		stateTableString = (char *)&(localNode.stateTable);
-		packetToBeSentBack.message = "";
+		message = "";
 		for(unsigned int i = 0; i < sizeof(StateTable); i++)
-			packetToBeSentBack.message.push_back(stateTableString[i]);
+			message.push_back(stateTableString[i]);
+		packetToBeSentBack.build(localNode.nodeId, packetReceived.header.key, 0, packetToBeSentBack.header.type, message);
 		nodeIdentifier = (NodeIdentifier *)packetReceived.message.c_str();
 		client.send(nodeIdentifier->ip,nodeIdentifier->port,packetToBeSentBack.serialize(),&response);
-		cout<<"Remote: " << response << endl;
 		break;
 
 	case STATE_TABLE:
@@ -113,38 +109,29 @@ void *communicate(void *arg) {
 			pthread_mutex_lock(&htaccess);
 			localNode.HT[keyValue->key] = keyValue->value;
 			pthread_mutex_unlock(&htaccess);
-			cout << "Put success" << endl;
 		}
-		for(it = localNode.HT.begin(); it != localNode.HT.end(); it++)
-			cout << it->first << ":" << it->second << endl;
+		//for(it = localNode.HT.begin(); it != localNode.HT.end(); it++)
+			//cout << it->first << ":" << it->second << endl;
 		break;
 
 	case GET:
 		strcpy(buffer, "get packet received");
 		count = write(newSockFd, buffer, strlen(buffer));
-		cout << packetReceived.header.type << endl;
 		status = client.send(packetReceived.header.key, packetReceived.message, packetReceived.header.type, packetReceived.header.hopCount + 1);
 		keyValue = (KeyValue *) packetReceived.message.c_str();
 		if(status.compare("Destination reached") == 0) {
-			packetToBeSentBack.header.srcNodeId = localNode.nodeId;
-			packetToBeSentBack.header.key = packetReceived.header.srcNodeId;
-			packetToBeSentBack.header.hopCount = 0;
-			packetToBeSentBack.header.type = VALUE;
-			packetToBeSentBack.header.messageLength = sizeof(KeyValue);
 			if(localNode.HT.find(keyValue->key) == localNode.HT.end()) {
 				keyValue->valueFound = false;
 			} else {
 				keyValue->valueFound = true;
 				strcpy(keyValue->value, localNode.HT[keyValue->key].c_str());
-				cout << "Get success" << endl;
 			}
 			keyValueString = (char *) keyValue;
-			packetToBeSentBack.message = "";
+			message = "";
 			for(unsigned int i = 0; i < sizeof(KeyValue); i++)
-				packetToBeSentBack.message.push_back(keyValueString[i]);
-			cout << keyValue->ip << ":" << keyValue->port << endl;
+				message.push_back(keyValueString[i]);
+			packetToBeSentBack.build(localNode.nodeId, packetReceived.header.srcNodeId, 0, VALUE, message);
 			client.send(keyValue->ip,keyValue->port,packetToBeSentBack.serialize(),&response);
-			cout<<"Remote: " << response << endl;
 		}
 		break;
 
@@ -153,13 +140,12 @@ void *communicate(void *arg) {
 		count = write(newSockFd, buffer, strlen(buffer));
 		keyValue = (KeyValue *) packetReceived.message.c_str();
 		if(keyValue->valueFound)
-			cout << "Value: " << keyValue->value << endl;
+			cout << keyValue->value << endl;
 		else
 			cout << "Key not found!" << endl;
 		break;
 
 	case REDISTRIBUTE:
-		cout << "REDISTRIBUTION REQUEST RECEIVED" << endl;
 		strcpy(buffer, "redistribute packet received");
 		count = write(newSockFd, buffer, strlen(buffer));
 		htManager.redistribute();
@@ -217,17 +203,6 @@ void *serverRunner(void *arg) {
 
 		pthread_t communicationThreadId;
 		pthread_create(&communicationThreadId, NULL, communicate, (void *) &newSockFd);
-
-		//strcpy(buffer, packetToBeSent.serialize());
-		//count = write(newSockFd, buffer, strlen(buffer));
-		/*if(count < 0) {
-			*retVal = SOCK_WRITE_ERROR;
-			close(sockFd);
-			close(newSockFd);
-			pthread_exit((void *) retVal);
-		}*/
-
-		//close(newSockFd);
 	}
 	close(sockFd);
 	localNode.serverSockFd = -1; //Server socket closed

@@ -72,6 +72,8 @@ int main(void) {
 			else if(arguments[0] == "lset") {
 				if(totalArguments == 1) {
 					lset();
+				} else if(totalArguments == 3) {
+					lset(arguments[1], arguments[2]);
 				} else {
 					cout << "Wrong number of arguments" << endl;
 				}
@@ -79,6 +81,8 @@ int main(void) {
 			else if(arguments[0] == "routetable") {
 				if(totalArguments == 1) {
 					routetable();
+				} else if(totalArguments == 3) {
+					routetable(arguments[1], arguments[2]);
 				} else {
 					cout << "Wrong number of arguments" << endl;
 				}
@@ -86,6 +90,8 @@ int main(void) {
 			else if(arguments[0] == "nset") {
 				if(totalArguments == 1) {
 					nset();
+				} else if(totalArguments == 3) {
+					nset(arguments[1], arguments[2]);
 				} else {
 					cout << "Wrong number of arguments" << endl;
 				}
@@ -93,6 +99,8 @@ int main(void) {
 			else if(arguments[0] == "dump") {
 				if(totalArguments == 1) {
 					dump();
+				} else if(totalArguments == 3) {
+					dump(arguments[1], arguments[2]);
 				} else {
 					cout << "Wrong number of arguments" << endl;
 				}

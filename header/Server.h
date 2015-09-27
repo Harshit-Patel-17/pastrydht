@@ -23,12 +23,14 @@
 
 using namespace std;
 
+/*! \brief Server class to accept incoming client requests.
+ */
 class Server {
 public:
 	Server();
 	virtual ~Server();
 
-	pthread_t start(Node *node);
+	pthread_t start(Node *node); /*!< Start server thread on port defined by Node structure. */
 };
 
 extern Server server;

@@ -1,0 +1,83 @@
+\hypertarget{structPacket}{\section{Packet Struct Reference}
+\label{structPacket}\index{Packet@{Packet}}
+}
+
+
+\hyperlink{structPacket}{Packet} to be sent over network.  
+
+
+
+
+{\ttfamily \#include $<$global.\-h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{structPacket_ab517659d7493a32249b98943852f25c9}{print} ()
+\item 
+string \hyperlink{structPacket_ae88c83f945fcb9e662a915220f2c3e2e}{serialize} ()
+\item 
+int \hyperlink{structPacket_a4556cf148dc34b717933303580602b56}{deserialize} (char $\ast$packet)
+\item 
+void \hyperlink{structPacket_a949ae4108926c0c62341d302d796dd24}{build} (string src\-Node\-Id, string key, int hop\-Count, message\-\_\-type type, string \hyperlink{structPacket_a8634c4b3877735f707488d1c7a16454c}{message})
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{structHeader}{Header} \hyperlink{structPacket_ae19cf919ad4dc07d036f47de65521d12}{header}
+\item 
+string \hyperlink{structPacket_a8634c4b3877735f707488d1c7a16454c}{message}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\hyperlink{structPacket}{Packet} to be sent over network. 
+
+\subsection{Member Function Documentation}
+\hypertarget{structPacket_a949ae4108926c0c62341d302d796dd24}{\index{Packet@{Packet}!build@{build}}
+\index{build@{build}!Packet@{Packet}}
+\subsubsection[{build}]{\setlength{\rightskip}{0pt plus 5cm}void Packet\-::build (
+\begin{DoxyParamCaption}
+\item[{string}]{src\-Node\-Id, }
+\item[{string}]{key, }
+\item[{int}]{hop\-Count, }
+\item[{message\-\_\-type}]{type, }
+\item[{string}]{message}
+\end{DoxyParamCaption}
+)}}\label{structPacket_a949ae4108926c0c62341d302d796dd24}
+Initialize memebers of \hyperlink{structPacket}{Packet}. \hypertarget{structPacket_a4556cf148dc34b717933303580602b56}{\index{Packet@{Packet}!deserialize@{deserialize}}
+\index{deserialize@{deserialize}!Packet@{Packet}}
+\subsubsection[{deserialize}]{\setlength{\rightskip}{0pt plus 5cm}int Packet\-::deserialize (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{packet}
+\end{DoxyParamCaption}
+)}}\label{structPacket_a4556cf148dc34b717933303580602b56}
+Construct \hyperlink{structPacket}{Packet} from character stream. \hypertarget{structPacket_ab517659d7493a32249b98943852f25c9}{\index{Packet@{Packet}!print@{print}}
+\index{print@{print}!Packet@{Packet}}
+\subsubsection[{print}]{\setlength{\rightskip}{0pt plus 5cm}void Packet\-::print (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{structPacket_ab517659d7493a32249b98943852f25c9}
+Print elements of \hyperlink{structPacket}{Packet} along with elements of \hyperlink{structHeader}{Header}. \hypertarget{structPacket_ae88c83f945fcb9e662a915220f2c3e2e}{\index{Packet@{Packet}!serialize@{serialize}}
+\index{serialize@{serialize}!Packet@{Packet}}
+\subsubsection[{serialize}]{\setlength{\rightskip}{0pt plus 5cm}string Packet\-::serialize (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{structPacket_ae88c83f945fcb9e662a915220f2c3e2e}
+Convert \hyperlink{structPacket}{Packet} into character stream 
+
+\subsection{Member Data Documentation}
+\hypertarget{structPacket_ae19cf919ad4dc07d036f47de65521d12}{\index{Packet@{Packet}!header@{header}}
+\index{header@{header}!Packet@{Packet}}
+\subsubsection[{header}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Header} Packet\-::header}}\label{structPacket_ae19cf919ad4dc07d036f47de65521d12}
+\hyperlink{structHeader}{Header} of \hyperlink{structPacket}{Packet}. \hypertarget{structPacket_a8634c4b3877735f707488d1c7a16454c}{\index{Packet@{Packet}!message@{message}}
+\index{message@{message}!Packet@{Packet}}
+\subsubsection[{message}]{\setlength{\rightskip}{0pt plus 5cm}string Packet\-::message}}\label{structPacket_a8634c4b3877735f707488d1c7a16454c}
+Message of \hyperlink{structPacket}{Packet}. 
+
+The documentation for this struct was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+header/global.\-h\item 
+src/global.\-cpp\end{DoxyCompactItemize}

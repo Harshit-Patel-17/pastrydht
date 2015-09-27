@@ -26,28 +26,29 @@ using namespace std;
 #define GOLD "\033[22;33m"
 #define BLUE "\033[22;34m"
 
-
+/*! \brief Terminal like User Interface.
+ */
 class Ui {
-	string appName;
-	string delim;
-	string *history;
-	string buffer;
-	string promptColor;
-	int historyStart;
-	int historyEnd;
-	int maxHistoryCount;
-	int currentHistory;
-	struct termios oldTerminalSettings;
-	struct termios newTerminalSettings;
-	int incr(int x);
-	int decr(int x);
+	string appName; /*!< Name of application in prompt */
+	string delim; /*!< Delimiter in prompt */
+	string *history; /*!< History of commands. */
+	string buffer; /*!< Command buffer. */
+	string promptColor; /*!< Color of prompt. */
+	int historyStart; /*!< Start index of history. */
+	int historyEnd; /*!< End index of history. */
+	int maxHistoryCount; /*!< Maximum commands that can be stored in history. */
+	int currentHistory; /*!< Current history index. */
+	struct termios oldTerminalSettings; /*!< Default terminal settings. */
+	struct termios newTerminalSettings; /*!< New terminal settings to capture key presses. */
+	int incr(int x); /*!< Increment in modulo maxHistoryCount system. */
+	int decr(int x); /*!< Decrement in modulo maxHistoryCount system. */
 public:
 	Ui();
 	virtual ~Ui();
 
-	void init(string appName, string delim, string promptColor);
-	int getInputLine(string **input);
-	void displayPrompt();
+	void init(string appName, string delim, string promptColor); /*!< Start User Interface. */
+	int getInputLine(string **input); /*!< Wait for user input. */
+	void displayPrompt(); /*!< Display prompt. */
 };
 
 extern Ui ui;

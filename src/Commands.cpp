@@ -114,15 +114,75 @@ void lset() {
 
 }
 
+void lset(string ip, string port) {
+
+	Packet packet;
+	string message, response;
+
+	struct NodeIdentifier *nodeIdentifier = new NodeIdentifier;
+	strcpy(nodeIdentifier->ip,localNode.nodeIp.c_str());
+	strcpy(nodeIdentifier->port,localNode.port.c_str());
+
+	char *buffer = (char *) nodeIdentifier;
+	for(unsigned int i = 0; i < sizeof(NodeIdentifier); i++)
+		message.push_back(buffer[i]);
+
+	delete nodeIdentifier;
+
+	packet.build(localNode.nodeId, "00000000", 0, LSET_REQ, message); //Key value is don't care
+	client.send(ip, port, packet.serialize(), &response);
+
+}
+
 void routetable() {
 
 	localNode.stateTable.routingTable.print();
 
 }
 
+void routetable(string ip, string port) {
+
+	Packet packet;
+	string message, response;
+
+	struct NodeIdentifier *nodeIdentifier = new NodeIdentifier;
+	strcpy(nodeIdentifier->ip,localNode.nodeIp.c_str());
+	strcpy(nodeIdentifier->port,localNode.port.c_str());
+
+	char *buffer = (char *) nodeIdentifier;
+	for(unsigned int i = 0; i < sizeof(NodeIdentifier); i++)
+		message.push_back(buffer[i]);
+
+	delete nodeIdentifier;
+
+	packet.build(localNode.nodeId, "00000000", 0, ROUTETABLE_REQ, message); //Key value is don't care
+	client.send(ip, port, packet.serialize(), &response);
+
+}
+
 void nset() {
 
 	localNode.stateTable.neighbourhoodSet.print();
+
+}
+
+void nset(string ip, string port) {
+
+	Packet packet;
+	string message, response;
+
+	struct NodeIdentifier *nodeIdentifier = new NodeIdentifier;
+	strcpy(nodeIdentifier->ip,localNode.nodeIp.c_str());
+	strcpy(nodeIdentifier->port,localNode.port.c_str());
+
+	char *buffer = (char *) nodeIdentifier;
+	for(unsigned int i = 0; i < sizeof(NodeIdentifier); i++)
+		message.push_back(buffer[i]);
+
+	delete nodeIdentifier;
+
+	packet.build(localNode.nodeId, "00000000", 0, NSET_REQ, message); //Key value is don't care
+	client.send(ip, port, packet.serialize(), &response);
 
 }
 
@@ -133,6 +193,26 @@ void dump() {
 	map<string, string> ::iterator it;
 	for(it = localNode.HT.begin(); it != localNode.HT.end(); it++)
 		cout << it->first << ": " << it->second << endl;
+
+}
+
+void dump(string ip, string port) {
+
+	Packet packet;
+	string message, response;
+
+	struct NodeIdentifier *nodeIdentifier = new NodeIdentifier;
+	strcpy(nodeIdentifier->ip,localNode.nodeIp.c_str());
+	strcpy(nodeIdentifier->port,localNode.port.c_str());
+
+	char *buffer = (char *) nodeIdentifier;
+	for(unsigned int i = 0; i < sizeof(NodeIdentifier); i++)
+		message.push_back(buffer[i]);
+
+	delete nodeIdentifier;
+
+	packet.build(localNode.nodeId, "00000000", 0, DUMP_REQ, message); //Key value is don't care
+	client.send(ip, port, packet.serialize(), &response);
 
 }
 

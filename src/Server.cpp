@@ -74,6 +74,10 @@ void *communicate(void *arg) {
 	case STATE_TABLE_X:
 	case STATE_TABLE_AZ:
 	case STATE_TABLE_LSET:
+	case LSET:
+	case ROUTETABLE:
+	case NSET:
+	case DUMP:
 		strcpy(buffer, "State table received");
 		count = write(newSockFd, buffer, strlen(buffer));
 		stateTable = (StateTable *) packetReceived.message.c_str();
@@ -138,6 +142,24 @@ void *communicate(void *arg) {
 		count = write(newSockFd, buffer, strlen(buffer));
 		nodeIdentifier = (NodeIdentifier *)packetReceived.message.c_str();
 		stateTableManager.send(&(localNode.stateTable), nodeIdentifier->ip, nodeIdentifier->port, packetReceived.header.key, STATE_TABLE_LSET, packetReceived.header.hopCount + 1);
+		break;
+
+	case LSET_REQ:
+	case ROUTETABLE_REQ:
+	case NSET_REQ:
+	case DUMP_REQ:
+		strcpy(buffer, "state table component request packet received");
+		count = write(newSockFd, buffer, strlen(buffer));
+		nodeIdentifier = (NodeIdentifier *)packetReceived.message.c_str();
+		if(packetReceived.header.type == LSET_REQ)
+			type = LSET;
+		else if(packetReceived.header.type == ROUTETABLE_REQ)
+			type = ROUTETABLE;
+		else if(packetReceived.header.type == NSET_REQ)
+			type = NSET;
+		else
+			type = DUMP;
+		stateTableManager.send(&(localNode.stateTable), nodeIdentifier->ip, nodeIdentifier->port, packetReceived.header.key, type, packetReceived.header.hopCount + 1);
 		break;
 
 	case FLOOD:

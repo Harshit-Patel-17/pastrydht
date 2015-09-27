@@ -25,9 +25,13 @@ void join(string ip, string port);
 void put(string key, string value);
 void get(string key);
 void lset();
+void lset(string ip, string port);
 void routetable();
+void routetable(string ip, string port);
 void nset();
+void nset(string ip, string port);
 void dump();
+void dump(string ip, string port);
 void quit();
 void shutdown();
 

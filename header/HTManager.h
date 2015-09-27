@@ -10,11 +10,13 @@
 
 #include "Client.h"
 
+/*! \brief Local Hash Table manager.
+ */
 class HTManager {
 public:
 	HTManager();
 	virtual ~HTManager();
-	void redistribute();
+	void redistribute(); /*!< Redistribute key-value pairs in Hash Table in pastry network. */
 };
 
 extern HTManager htManager;

@@ -1,0 +1,70 @@
+\hypertarget{classClient}{\section{Client Class Reference}
+\label{classClient}\index{Client@{Client}}
+}
+
+
+\hyperlink{classClient}{Client} class to start communication with peer.  
+
+
+
+
+{\ttfamily \#include $<$Client.\-h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{structcell}{cell} \hyperlink{classClient_a60acaf3da29aa7fa950cfd693456ae9a}{forward} (string key)
+\item 
+int \hyperlink{classClient_a8a83655f0de978963e0edae6aaba25d6}{send} (string ip, string port, string message, string $\ast$response)
+\item 
+string \hyperlink{classClient_adba5263fc487e835c6d5881151d2fddb}{send} (string key, string message, message\-\_\-type type, int hop\-Count=0)
+\item 
+void \hyperlink{classClient_ad6f0c1591bafeace286fb6e5f14d430e}{flood} (string prev\-Key, string message)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\hyperlink{classClient}{Client} class to start communication with peer. 
+
+\subsection{Member Function Documentation}
+\hypertarget{classClient_ad6f0c1591bafeace286fb6e5f14d430e}{\index{Client@{Client}!flood@{flood}}
+\index{flood@{flood}!Client@{Client}}
+\subsubsection[{flood}]{\setlength{\rightskip}{0pt plus 5cm}void Client\-::flood (
+\begin{DoxyParamCaption}
+\item[{string}]{prev\-Key, }
+\item[{string}]{message}
+\end{DoxyParamCaption}
+)}}\label{classClient_ad6f0c1591bafeace286fb6e5f14d430e}
+Flood message to each node of pastry network. \hypertarget{classClient_a60acaf3da29aa7fa950cfd693456ae9a}{\index{Client@{Client}!forward@{forward}}
+\index{forward@{forward}!Client@{Client}}
+\subsubsection[{forward}]{\setlength{\rightskip}{0pt plus 5cm}{\bf cell} Client\-::forward (
+\begin{DoxyParamCaption}
+\item[{string}]{key}
+\end{DoxyParamCaption}
+)}}\label{classClient_a60acaf3da29aa7fa950cfd693456ae9a}
+Find next hop in pastry network based on key. \hypertarget{classClient_a8a83655f0de978963e0edae6aaba25d6}{\index{Client@{Client}!send@{send}}
+\index{send@{send}!Client@{Client}}
+\subsubsection[{send}]{\setlength{\rightskip}{0pt plus 5cm}int Client\-::send (
+\begin{DoxyParamCaption}
+\item[{string}]{ip, }
+\item[{string}]{port, }
+\item[{string}]{message, }
+\item[{string $\ast$}]{response}
+\end{DoxyParamCaption}
+)}}\label{classClient_a8a83655f0de978963e0edae6aaba25d6}
+Send message to peer with given ip and port. \hypertarget{classClient_adba5263fc487e835c6d5881151d2fddb}{\index{Client@{Client}!send@{send}}
+\index{send@{send}!Client@{Client}}
+\subsubsection[{send}]{\setlength{\rightskip}{0pt plus 5cm}string Client\-::send (
+\begin{DoxyParamCaption}
+\item[{string}]{key, }
+\item[{string}]{message, }
+\item[{message\-\_\-type}]{type, }
+\item[{int}]{hop\-Count = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}\label{classClient_adba5263fc487e835c6d5881151d2fddb}
+Route message with given key. 
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+header/Client.\-h\item 
+src/Client.\-cpp\end{DoxyCompactItemize}

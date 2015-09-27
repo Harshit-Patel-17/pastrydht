@@ -1,0 +1,174 @@
+\hypertarget{classStateTableManager}{\section{State\-Table\-Manager Class Reference}
+\label{classStateTableManager}\index{State\-Table\-Manager@{State\-Table\-Manager}}
+}
+
+
+Local \hyperlink{structStateTable}{State\-Table} manager.  
+
+
+
+
+{\ttfamily \#include $<$State\-Table\-Manager.\-h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classStateTableManager_ad2aaa2cdc795223ae340339624a651cf}{insert\-In\-Q} (string node\-Id, \hyperlink{structStateTable}{State\-Table} state\-Table, message\-\_\-type type)
+\item 
+void \hyperlink{classStateTableManager_ad68c33a035e6bcefc9d39967215167cf}{join\-Phase1} (string dest\-Node\-Ip, string dest\-Port)
+\item 
+void \hyperlink{classStateTableManager_a5ac5b05aaf12903dcfb484b432de477c}{join\-Phase2} ()
+\item 
+void \hyperlink{classStateTableManager_ae65f0a114e7d9a5d8b83b6ef4599bfcc}{redistribute\-Phase} ()
+\item 
+pthread\-\_\-t \hyperlink{classStateTableManager_a25e083df1453ad8f08f447050546d072}{start\-Manager} ()
+\item 
+void \hyperlink{classStateTableManager_a6685eaf336e005c138797a0cbe5d6e61}{update\-Leaf\-Set} (pair$<$ pair$<$ string, \hyperlink{structStateTable}{State\-Table} $\ast$ $>$, message\-\_\-type $>$ Q\-Elem)
+\item 
+void \hyperlink{classStateTableManager_afa8cb85da489510d64e61001768366d0}{update\-Leaf\-Set} (\hyperlink{structcell}{cell} node\-Cell)
+\item 
+void \hyperlink{classStateTableManager_ab9e8881bb8e3fb0a5df3f165e05322a0}{update\-Neighbourhood\-Set} (pair$<$ pair$<$ string, \hyperlink{structStateTable}{State\-Table} $\ast$ $>$, message\-\_\-type $>$ Q\-Elem)
+\item 
+void \hyperlink{classStateTableManager_a9fdbd4242382669d7c0db1a81ac77f96}{update\-Neighbourhood\-Set} (\hyperlink{structcell}{cell} node\-Cell)
+\item 
+bool \hyperlink{classStateTableManager_aef91ab7cba7738cd9dd6b3c8ab8453e1}{all\-State\-Table\-Received} ()
+\item 
+void \hyperlink{classStateTableManager_a6a0df095e2d24f3b0d9727d8c1f5f1dd}{clear\-All} ()
+\item 
+void \hyperlink{classStateTableManager_ae91725ab5cfea9b3c4642826b37ceeaf}{send} (\hyperlink{structStateTable}{State\-Table} $\ast$state\-Table, string ip, string port, string key, message\-\_\-type type, int hop\-Count)
+\item 
+void \hyperlink{classStateTableManager_a20199103d4cf32aa63aab82a1d441137}{repair\-Leaf\-Set} (string purged\-Node\-Id)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+vector$<$ int $>$ \hyperlink{classStateTableManager_a3846ef7fd2abcbf042e0a908e45c3fd4}{hop\-Count\-Vector}
+\item 
+bool \hyperlink{classStateTableManager_a9895a129ebb8725c0ecfb3907f1ae23a}{z\-Received}
+\item 
+queue$<$ pair$<$ pair$<$ string, \\*
+\hyperlink{structStateTable}{State\-Table} $\ast$ $>$, message\-\_\-type $>$ $>$ \hyperlink{classStateTableManager_a6f7b7e7d9b63c79252aff1de8a13e3b7}{Q}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Local \hyperlink{structStateTable}{State\-Table} manager. 
+
+\subsection{Member Function Documentation}
+\hypertarget{classStateTableManager_aef91ab7cba7738cd9dd6b3c8ab8453e1}{\index{State\-Table\-Manager@{State\-Table\-Manager}!all\-State\-Table\-Received@{all\-State\-Table\-Received}}
+\index{all\-State\-Table\-Received@{all\-State\-Table\-Received}!StateTableManager@{State\-Table\-Manager}}
+\subsubsection[{all\-State\-Table\-Received}]{\setlength{\rightskip}{0pt plus 5cm}bool State\-Table\-Manager\-::all\-State\-Table\-Received (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classStateTableManager_aef91ab7cba7738cd9dd6b3c8ab8453e1}
+Used for synchronization of phase1 and phase2 of join. \hypertarget{classStateTableManager_a6a0df095e2d24f3b0d9727d8c1f5f1dd}{\index{State\-Table\-Manager@{State\-Table\-Manager}!clear\-All@{clear\-All}}
+\index{clear\-All@{clear\-All}!StateTableManager@{State\-Table\-Manager}}
+\subsubsection[{clear\-All}]{\setlength{\rightskip}{0pt plus 5cm}void State\-Table\-Manager\-::clear\-All (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classStateTableManager_a6a0df095e2d24f3b0d9727d8c1f5f1dd}
+Used for synchronization of phase1 and phase2 of join. \hypertarget{classStateTableManager_ad2aaa2cdc795223ae340339624a651cf}{\index{State\-Table\-Manager@{State\-Table\-Manager}!insert\-In\-Q@{insert\-In\-Q}}
+\index{insert\-In\-Q@{insert\-In\-Q}!StateTableManager@{State\-Table\-Manager}}
+\subsubsection[{insert\-In\-Q}]{\setlength{\rightskip}{0pt plus 5cm}void State\-Table\-Manager\-::insert\-In\-Q (
+\begin{DoxyParamCaption}
+\item[{string}]{node\-Id, }
+\item[{{\bf State\-Table}}]{state\-Table, }
+\item[{message\-\_\-type}]{type}
+\end{DoxyParamCaption}
+)}}\label{classStateTableManager_ad2aaa2cdc795223ae340339624a651cf}
+Insert state table in queue. \hypertarget{classStateTableManager_ad68c33a035e6bcefc9d39967215167cf}{\index{State\-Table\-Manager@{State\-Table\-Manager}!join\-Phase1@{join\-Phase1}}
+\index{join\-Phase1@{join\-Phase1}!StateTableManager@{State\-Table\-Manager}}
+\subsubsection[{join\-Phase1}]{\setlength{\rightskip}{0pt plus 5cm}void State\-Table\-Manager\-::join\-Phase1 (
+\begin{DoxyParamCaption}
+\item[{string}]{dest\-Node\-Ip, }
+\item[{string}]{dest\-Port}
+\end{DoxyParamCaption}
+)}}\label{classStateTableManager_ad68c33a035e6bcefc9d39967215167cf}
+Join phase1. \hypertarget{classStateTableManager_a5ac5b05aaf12903dcfb484b432de477c}{\index{State\-Table\-Manager@{State\-Table\-Manager}!join\-Phase2@{join\-Phase2}}
+\index{join\-Phase2@{join\-Phase2}!StateTableManager@{State\-Table\-Manager}}
+\subsubsection[{join\-Phase2}]{\setlength{\rightskip}{0pt plus 5cm}void State\-Table\-Manager\-::join\-Phase2 (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classStateTableManager_a5ac5b05aaf12903dcfb484b432de477c}
+Join phase2. \hypertarget{classStateTableManager_ae65f0a114e7d9a5d8b83b6ef4599bfcc}{\index{State\-Table\-Manager@{State\-Table\-Manager}!redistribute\-Phase@{redistribute\-Phase}}
+\index{redistribute\-Phase@{redistribute\-Phase}!StateTableManager@{State\-Table\-Manager}}
+\subsubsection[{redistribute\-Phase}]{\setlength{\rightskip}{0pt plus 5cm}void State\-Table\-Manager\-::redistribute\-Phase (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classStateTableManager_ae65f0a114e7d9a5d8b83b6ef4599bfcc}
+Redistribution phase once a new node joins. \hypertarget{classStateTableManager_a20199103d4cf32aa63aab82a1d441137}{\index{State\-Table\-Manager@{State\-Table\-Manager}!repair\-Leaf\-Set@{repair\-Leaf\-Set}}
+\index{repair\-Leaf\-Set@{repair\-Leaf\-Set}!StateTableManager@{State\-Table\-Manager}}
+\subsubsection[{repair\-Leaf\-Set}]{\setlength{\rightskip}{0pt plus 5cm}void State\-Table\-Manager\-::repair\-Leaf\-Set (
+\begin{DoxyParamCaption}
+\item[{string}]{purged\-Node\-Id}
+\end{DoxyParamCaption}
+)}}\label{classStateTableManager_a20199103d4cf32aa63aab82a1d441137}
+Initiate repairing of leaf set once an entry from leaf set is removed. \hypertarget{classStateTableManager_ae91725ab5cfea9b3c4642826b37ceeaf}{\index{State\-Table\-Manager@{State\-Table\-Manager}!send@{send}}
+\index{send@{send}!StateTableManager@{State\-Table\-Manager}}
+\subsubsection[{send}]{\setlength{\rightskip}{0pt plus 5cm}void State\-Table\-Manager\-::send (
+\begin{DoxyParamCaption}
+\item[{{\bf State\-Table} $\ast$}]{state\-Table, }
+\item[{string}]{ip, }
+\item[{string}]{port, }
+\item[{string}]{key, }
+\item[{message\-\_\-type}]{type, }
+\item[{int}]{hop\-Count}
+\end{DoxyParamCaption}
+)}}\label{classStateTableManager_ae91725ab5cfea9b3c4642826b37ceeaf}
+Send local state table to peer with given I\-P and Port addresses. \hypertarget{classStateTableManager_a25e083df1453ad8f08f447050546d072}{\index{State\-Table\-Manager@{State\-Table\-Manager}!start\-Manager@{start\-Manager}}
+\index{start\-Manager@{start\-Manager}!StateTableManager@{State\-Table\-Manager}}
+\subsubsection[{start\-Manager}]{\setlength{\rightskip}{0pt plus 5cm}pthread\-\_\-t State\-Table\-Manager\-::start\-Manager (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classStateTableManager_a25e083df1453ad8f08f447050546d072}
+Start \hyperlink{classStateTableManager}{State\-Table\-Manager} thread. \hypertarget{classStateTableManager_a6685eaf336e005c138797a0cbe5d6e61}{\index{State\-Table\-Manager@{State\-Table\-Manager}!update\-Leaf\-Set@{update\-Leaf\-Set}}
+\index{update\-Leaf\-Set@{update\-Leaf\-Set}!StateTableManager@{State\-Table\-Manager}}
+\subsubsection[{update\-Leaf\-Set}]{\setlength{\rightskip}{0pt plus 5cm}void State\-Table\-Manager\-::update\-Leaf\-Set (
+\begin{DoxyParamCaption}
+\item[{pair$<$ pair$<$ string, {\bf State\-Table} $\ast$ $>$, message\-\_\-type $>$}]{Q\-Elem}
+\end{DoxyParamCaption}
+)}}\label{classStateTableManager_a6685eaf336e005c138797a0cbe5d6e61}
+Update leaf set using received state table. \hypertarget{classStateTableManager_afa8cb85da489510d64e61001768366d0}{\index{State\-Table\-Manager@{State\-Table\-Manager}!update\-Leaf\-Set@{update\-Leaf\-Set}}
+\index{update\-Leaf\-Set@{update\-Leaf\-Set}!StateTableManager@{State\-Table\-Manager}}
+\subsubsection[{update\-Leaf\-Set}]{\setlength{\rightskip}{0pt plus 5cm}void State\-Table\-Manager\-::update\-Leaf\-Set (
+\begin{DoxyParamCaption}
+\item[{{\bf cell}}]{node\-Cell}
+\end{DoxyParamCaption}
+)}}\label{classStateTableManager_afa8cb85da489510d64e61001768366d0}
+Update leaf set using received state table. \hypertarget{classStateTableManager_ab9e8881bb8e3fb0a5df3f165e05322a0}{\index{State\-Table\-Manager@{State\-Table\-Manager}!update\-Neighbourhood\-Set@{update\-Neighbourhood\-Set}}
+\index{update\-Neighbourhood\-Set@{update\-Neighbourhood\-Set}!StateTableManager@{State\-Table\-Manager}}
+\subsubsection[{update\-Neighbourhood\-Set}]{\setlength{\rightskip}{0pt plus 5cm}void State\-Table\-Manager\-::update\-Neighbourhood\-Set (
+\begin{DoxyParamCaption}
+\item[{pair$<$ pair$<$ string, {\bf State\-Table} $\ast$ $>$, message\-\_\-type $>$}]{Q\-Elem}
+\end{DoxyParamCaption}
+)}}\label{classStateTableManager_ab9e8881bb8e3fb0a5df3f165e05322a0}
+Update neighborhood set using received state table. \hypertarget{classStateTableManager_a9fdbd4242382669d7c0db1a81ac77f96}{\index{State\-Table\-Manager@{State\-Table\-Manager}!update\-Neighbourhood\-Set@{update\-Neighbourhood\-Set}}
+\index{update\-Neighbourhood\-Set@{update\-Neighbourhood\-Set}!StateTableManager@{State\-Table\-Manager}}
+\subsubsection[{update\-Neighbourhood\-Set}]{\setlength{\rightskip}{0pt plus 5cm}void State\-Table\-Manager\-::update\-Neighbourhood\-Set (
+\begin{DoxyParamCaption}
+\item[{{\bf cell}}]{node\-Cell}
+\end{DoxyParamCaption}
+)}}\label{classStateTableManager_a9fdbd4242382669d7c0db1a81ac77f96}
+Update neighborhood set using received state table. 
+
+\subsection{Member Data Documentation}
+\hypertarget{classStateTableManager_a3846ef7fd2abcbf042e0a908e45c3fd4}{\index{State\-Table\-Manager@{State\-Table\-Manager}!hop\-Count\-Vector@{hop\-Count\-Vector}}
+\index{hop\-Count\-Vector@{hop\-Count\-Vector}!StateTableManager@{State\-Table\-Manager}}
+\subsubsection[{hop\-Count\-Vector}]{\setlength{\rightskip}{0pt plus 5cm}vector$<$int$>$ State\-Table\-Manager\-::hop\-Count\-Vector}}\label{classStateTableManager_a3846ef7fd2abcbf042e0a908e45c3fd4}
+Used for synchronization of phase1 and phase2 of join. \hypertarget{classStateTableManager_a6f7b7e7d9b63c79252aff1de8a13e3b7}{\index{State\-Table\-Manager@{State\-Table\-Manager}!Q@{Q}}
+\index{Q@{Q}!StateTableManager@{State\-Table\-Manager}}
+\subsubsection[{Q}]{\setlength{\rightskip}{0pt plus 5cm}queue$<$ pair$<$pair$<$string, {\bf State\-Table}$\ast$$>$, message\-\_\-type$>$ $>$ State\-Table\-Manager\-::\-Q}}\label{classStateTableManager_a6f7b7e7d9b63c79252aff1de8a13e3b7}
+Stores state tables received from peers for processing. \hypertarget{classStateTableManager_a9895a129ebb8725c0ecfb3907f1ae23a}{\index{State\-Table\-Manager@{State\-Table\-Manager}!z\-Received@{z\-Received}}
+\index{z\-Received@{z\-Received}!StateTableManager@{State\-Table\-Manager}}
+\subsubsection[{z\-Received}]{\setlength{\rightskip}{0pt plus 5cm}bool State\-Table\-Manager\-::z\-Received}}\label{classStateTableManager_a9895a129ebb8725c0ecfb3907f1ae23a}
+Used for synchronization of phase1 and phase2 of join. 
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+header/State\-Table\-Manager.\-h\item 
+src/state\-Table\-Manager.\-cpp\end{DoxyCompactItemize}

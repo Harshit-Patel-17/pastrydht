@@ -462,6 +462,22 @@ void *stateTableManagerRunner(void *arg) {
 				pthread_mutex_unlock(&staccess);
 				localNode.stateTable.print();
 				break;
+
+			case LSET:
+				QElem.first.second->leafSet.print();
+				break;
+
+			case ROUTETABLE:
+				QElem.first.second->routingTable.print();
+				break;
+
+			case NSET:
+				QElem.first.second->neighbourhoodSet.print();
+				break;
+
+			case DUMP:
+				QElem.first.second->print();
+				break;
 			}
 		}
 	}

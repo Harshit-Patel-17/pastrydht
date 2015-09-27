@@ -1,0 +1,88 @@
+\hypertarget{classNode}{\section{Node Class Reference}
+\label{classNode}\index{Node@{Node}}
+}
+
+
+Contains information pertaining to a node in pastry network.  
+
+
+
+
+{\ttfamily \#include $<$global.\-h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{classNode_a805ce0a14cce97c7a2bd7f1bf4bb85b4}{set\-Node} (string \hyperlink{classNode_a59879ea3bcabb0ea5211dffcfbf49b73}{node\-Ip}, string \hyperlink{classNode_adcf35fc0482227d0b62df69b685b94da}{port})
+\item 
+virtual void \hyperlink{classNode_a252d888f401e1a310cb3d720cf5631a9}{application} (string s)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+string \hyperlink{classNode_a59879ea3bcabb0ea5211dffcfbf49b73}{node\-Ip}
+\item 
+string \hyperlink{classNode_a709c164657057a32cc79dd7a256ed744}{node\-Id}
+\item 
+string \hyperlink{classNode_adcf35fc0482227d0b62df69b685b94da}{port}
+\item 
+\hyperlink{structStateTable}{State\-Table} \hyperlink{classNode_a22dbe41a765f7d31f43f5996d2aedb91}{state\-Table}
+\item 
+map$<$ string, string $>$ \hyperlink{classNode_aef05ed03e2d587ae1761c7dc4a1ad213}{H\-T}
+\item 
+int \hyperlink{classNode_a368d0971e95e5481cb17ce82145098bd}{server\-Sock\-Fd}
+\item 
+bool \hyperlink{classNode_ab125f5f050074e2dae467832069b9414}{is\-Node\-Initialized}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Contains information pertaining to a node in pastry network. 
+
+\subsection{Member Function Documentation}
+\hypertarget{classNode_a252d888f401e1a310cb3d720cf5631a9}{\index{Node@{Node}!application@{application}}
+\index{application@{application}!Node@{Node}}
+\subsubsection[{application}]{\setlength{\rightskip}{0pt plus 5cm}void Node\-::application (
+\begin{DoxyParamCaption}
+\item[{string}]{s}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{classNode_a252d888f401e1a310cb3d720cf5631a9}
+Virtual function. To be defined by application which uses services of pastry. \hypertarget{classNode_a805ce0a14cce97c7a2bd7f1bf4bb85b4}{\index{Node@{Node}!set\-Node@{set\-Node}}
+\index{set\-Node@{set\-Node}!Node@{Node}}
+\subsubsection[{set\-Node}]{\setlength{\rightskip}{0pt plus 5cm}int Node\-::set\-Node (
+\begin{DoxyParamCaption}
+\item[{string}]{node\-Ip, }
+\item[{string}]{port}
+\end{DoxyParamCaption}
+)}}\label{classNode_a805ce0a14cce97c7a2bd7f1bf4bb85b4}
+Initializes \hyperlink{classNode}{Node} structure. 
+
+\subsection{Member Data Documentation}
+\hypertarget{classNode_aef05ed03e2d587ae1761c7dc4a1ad213}{\index{Node@{Node}!H\-T@{H\-T}}
+\index{H\-T@{H\-T}!Node@{Node}}
+\subsubsection[{H\-T}]{\setlength{\rightskip}{0pt plus 5cm}map$<$string, string$>$ Node\-::\-H\-T}}\label{classNode_aef05ed03e2d587ae1761c7dc4a1ad213}
+Local Hash Table. \hypertarget{classNode_ab125f5f050074e2dae467832069b9414}{\index{Node@{Node}!is\-Node\-Initialized@{is\-Node\-Initialized}}
+\index{is\-Node\-Initialized@{is\-Node\-Initialized}!Node@{Node}}
+\subsubsection[{is\-Node\-Initialized}]{\setlength{\rightskip}{0pt plus 5cm}bool Node\-::is\-Node\-Initialized}}\label{classNode_ab125f5f050074e2dae467832069b9414}
+Check if structure is initialized. \hypertarget{classNode_a709c164657057a32cc79dd7a256ed744}{\index{Node@{Node}!node\-Id@{node\-Id}}
+\index{node\-Id@{node\-Id}!Node@{Node}}
+\subsubsection[{node\-Id}]{\setlength{\rightskip}{0pt plus 5cm}string Node\-::node\-Id}}\label{classNode_a709c164657057a32cc79dd7a256ed744}
+\hyperlink{classNode}{Node} I\-D of local node. \hypertarget{classNode_a59879ea3bcabb0ea5211dffcfbf49b73}{\index{Node@{Node}!node\-Ip@{node\-Ip}}
+\index{node\-Ip@{node\-Ip}!Node@{Node}}
+\subsubsection[{node\-Ip}]{\setlength{\rightskip}{0pt plus 5cm}string Node\-::node\-Ip}}\label{classNode_a59879ea3bcabb0ea5211dffcfbf49b73}
+\hyperlink{classNode}{Node} I\-P of local node. \hypertarget{classNode_adcf35fc0482227d0b62df69b685b94da}{\index{Node@{Node}!port@{port}}
+\index{port@{port}!Node@{Node}}
+\subsubsection[{port}]{\setlength{\rightskip}{0pt plus 5cm}string Node\-::port}}\label{classNode_adcf35fc0482227d0b62df69b685b94da}
+Port number on which server thread is listening. \hypertarget{classNode_a368d0971e95e5481cb17ce82145098bd}{\index{Node@{Node}!server\-Sock\-Fd@{server\-Sock\-Fd}}
+\index{server\-Sock\-Fd@{server\-Sock\-Fd}!Node@{Node}}
+\subsubsection[{server\-Sock\-Fd}]{\setlength{\rightskip}{0pt plus 5cm}int Node\-::server\-Sock\-Fd}}\label{classNode_a368d0971e95e5481cb17ce82145098bd}
+File descriptor of server socket. \hypertarget{classNode_a22dbe41a765f7d31f43f5996d2aedb91}{\index{Node@{Node}!state\-Table@{state\-Table}}
+\index{state\-Table@{state\-Table}!Node@{Node}}
+\subsubsection[{state\-Table}]{\setlength{\rightskip}{0pt plus 5cm}{\bf State\-Table} Node\-::state\-Table}}\label{classNode_a22dbe41a765f7d31f43f5996d2aedb91}
+Pastry state table. 
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+header/global.\-h\item 
+src/global.\-cpp\item 
+src/main.\-cpp\end{DoxyCompactItemize}

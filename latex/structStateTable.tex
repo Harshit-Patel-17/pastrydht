@@ -1,0 +1,135 @@
+\hypertarget{structStateTable}{\section{State\-Table Struct Reference}
+\label{structStateTable}\index{State\-Table@{State\-Table}}
+}
+
+
+Pastry \hyperlink{structStateTable}{State\-Table}.  
+
+
+
+
+{\ttfamily \#include $<$State\-Table.\-h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{structStateTable_a43e620d28a500e76ba749836cc56fc49}{initialize\-Leaf\-Set} ()
+\item 
+void \hyperlink{structStateTable_ab3a1936562d8b660297923ad1e924c75}{initialize\-Neighbourhood\-Set} ()
+\item 
+void \hyperlink{structStateTable_a3ea707fb80290726b1d48a6a2023a76f}{initialize\-Routing\-Table} ()
+\item 
+\hyperlink{structStateTable_a0154fd15c269f0d8684c05bfdd217985}{State\-Table} (const \hyperlink{structStateTable}{State\-Table} \&state\-Table)
+\item 
+\hyperlink{structStateTable_a86b43a8ebb43361b69d43fac1b0c5b2b}{State\-Table} (\hyperlink{structLeafSetStructure}{Leaf\-Set\-Structure} \hyperlink{structStateTable_a1fc9c824d5a46581e41be343ed413a33}{leaf\-Set}, \hyperlink{structNeighbourhoodSetStructure}{Neighbourhood\-Set\-Structure} \hyperlink{structStateTable_a85564c6deec324c3db3263ca08263f63}{neighbourhood\-Set}, \hyperlink{structRoutingTableStructure}{Routing\-Table\-Structure} \hyperlink{structStateTable_a8ccc728c639db2384c4eed11a8f3d484}{routing\-Table})
+\item 
+void \hyperlink{structStateTable_a06d157dd4a20b752bb5333eea73b1c8a}{init} (\hyperlink{structcell}{cell} local\-Node\-Cell)
+\item 
+bool \hyperlink{structStateTable_a09249e1c4eb2645031d086adad2bca37}{purge} (string node\-Id)
+\item 
+void \hyperlink{structStateTable_a4198a3d6d611263eaf56c74b0582a00d}{print} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{structStateTable_ae516afd0b69c8a2b813729d60fec358d}{hop\-Count}
+\item 
+char \hyperlink{structStateTable_a9c09d0935258b0ac3f5675ccdc66dded}{dont\-Accept} \mbox{[}9\mbox{]}
+\item 
+\hyperlink{structLeafSetStructure}{Leaf\-Set\-Structure} \hyperlink{structStateTable_a1fc9c824d5a46581e41be343ed413a33}{leaf\-Set}
+\item 
+\hyperlink{structNeighbourhoodSetStructure}{Neighbourhood\-Set\-Structure} \hyperlink{structStateTable_a85564c6deec324c3db3263ca08263f63}{neighbourhood\-Set}
+\item 
+\hyperlink{structRoutingTableStructure}{Routing\-Table\-Structure} \hyperlink{structStateTable_a8ccc728c639db2384c4eed11a8f3d484}{routing\-Table}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Pastry \hyperlink{structStateTable}{State\-Table}. 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{structStateTable_a0154fd15c269f0d8684c05bfdd217985}{\index{State\-Table@{State\-Table}!State\-Table@{State\-Table}}
+\index{State\-Table@{State\-Table}!StateTable@{State\-Table}}
+\subsubsection[{State\-Table}]{\setlength{\rightskip}{0pt plus 5cm}State\-Table\-::\-State\-Table (
+\begin{DoxyParamCaption}
+\item[{const {\bf State\-Table} \&}]{state\-Table}
+\end{DoxyParamCaption}
+)}}\label{structStateTable_a0154fd15c269f0d8684c05bfdd217985}
+Copy constructor. \hypertarget{structStateTable_a86b43a8ebb43361b69d43fac1b0c5b2b}{\index{State\-Table@{State\-Table}!State\-Table@{State\-Table}}
+\index{State\-Table@{State\-Table}!StateTable@{State\-Table}}
+\subsubsection[{State\-Table}]{\setlength{\rightskip}{0pt plus 5cm}State\-Table\-::\-State\-Table (
+\begin{DoxyParamCaption}
+\item[{{\bf Leaf\-Set\-Structure}}]{leaf\-Set, }
+\item[{{\bf Neighbourhood\-Set\-Structure}}]{neighbourhood\-Set, }
+\item[{{\bf Routing\-Table\-Structure}}]{routing\-Table}
+\end{DoxyParamCaption}
+)}}\label{structStateTable_a86b43a8ebb43361b69d43fac1b0c5b2b}
+Copy constructor. 
+
+\subsection{Member Function Documentation}
+\hypertarget{structStateTable_a06d157dd4a20b752bb5333eea73b1c8a}{\index{State\-Table@{State\-Table}!init@{init}}
+\index{init@{init}!StateTable@{State\-Table}}
+\subsubsection[{init}]{\setlength{\rightskip}{0pt plus 5cm}void State\-Table\-::init (
+\begin{DoxyParamCaption}
+\item[{{\bf cell}}]{local\-Node\-Cell}
+\end{DoxyParamCaption}
+)}}\label{structStateTable_a06d157dd4a20b752bb5333eea73b1c8a}
+Initialize leaf set with node id of local node in middle. Initialize neighborhood set with one cell having node id of local node. Initialize unused entries of routing table with node id of local node. \hypertarget{structStateTable_a43e620d28a500e76ba749836cc56fc49}{\index{State\-Table@{State\-Table}!initialize\-Leaf\-Set@{initialize\-Leaf\-Set}}
+\index{initialize\-Leaf\-Set@{initialize\-Leaf\-Set}!StateTable@{State\-Table}}
+\subsubsection[{initialize\-Leaf\-Set}]{\setlength{\rightskip}{0pt plus 5cm}void State\-Table\-::initialize\-Leaf\-Set (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{structStateTable_a43e620d28a500e76ba749836cc56fc49}
+Initialize leaf set with node id of local node in middle. \hypertarget{structStateTable_ab3a1936562d8b660297923ad1e924c75}{\index{State\-Table@{State\-Table}!initialize\-Neighbourhood\-Set@{initialize\-Neighbourhood\-Set}}
+\index{initialize\-Neighbourhood\-Set@{initialize\-Neighbourhood\-Set}!StateTable@{State\-Table}}
+\subsubsection[{initialize\-Neighbourhood\-Set}]{\setlength{\rightskip}{0pt plus 5cm}void State\-Table\-::initialize\-Neighbourhood\-Set (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{structStateTable_ab3a1936562d8b660297923ad1e924c75}
+Initialize neighborhood set with one cell having node id of local node. \hypertarget{structStateTable_a3ea707fb80290726b1d48a6a2023a76f}{\index{State\-Table@{State\-Table}!initialize\-Routing\-Table@{initialize\-Routing\-Table}}
+\index{initialize\-Routing\-Table@{initialize\-Routing\-Table}!StateTable@{State\-Table}}
+\subsubsection[{initialize\-Routing\-Table}]{\setlength{\rightskip}{0pt plus 5cm}void State\-Table\-::initialize\-Routing\-Table (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{structStateTable_a3ea707fb80290726b1d48a6a2023a76f}
+Initialize unused entries of routing table with node id of local node. \hypertarget{structStateTable_a4198a3d6d611263eaf56c74b0582a00d}{\index{State\-Table@{State\-Table}!print@{print}}
+\index{print@{print}!StateTable@{State\-Table}}
+\subsubsection[{print}]{\setlength{\rightskip}{0pt plus 5cm}void State\-Table\-::print (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{structStateTable_a4198a3d6d611263eaf56c74b0582a00d}
+Print \hyperlink{structStateTable}{State\-Table}. \hypertarget{structStateTable_a09249e1c4eb2645031d086adad2bca37}{\index{State\-Table@{State\-Table}!purge@{purge}}
+\index{purge@{purge}!StateTable@{State\-Table}}
+\subsubsection[{purge}]{\setlength{\rightskip}{0pt plus 5cm}bool State\-Table\-::purge (
+\begin{DoxyParamCaption}
+\item[{string}]{node\-Id}
+\end{DoxyParamCaption}
+)}}\label{structStateTable_a09249e1c4eb2645031d086adad2bca37}
+Remove node\-Id from the entire \hyperlink{structStateTable}{State\-Table}. 
+
+\subsection{Member Data Documentation}
+\hypertarget{structStateTable_a9c09d0935258b0ac3f5675ccdc66dded}{\index{State\-Table@{State\-Table}!dont\-Accept@{dont\-Accept}}
+\index{dont\-Accept@{dont\-Accept}!StateTable@{State\-Table}}
+\subsubsection[{dont\-Accept}]{\setlength{\rightskip}{0pt plus 5cm}char State\-Table\-::dont\-Accept\mbox{[}9\mbox{]}}}\label{structStateTable_a9c09d0935258b0ac3f5675ccdc66dded}
+Used while repairing the leaf set to avoid node I\-D of departed node to reappear in \hyperlink{structStateTable}{State\-Table}. \hypertarget{structStateTable_ae516afd0b69c8a2b813729d60fec358d}{\index{State\-Table@{State\-Table}!hop\-Count@{hop\-Count}}
+\index{hop\-Count@{hop\-Count}!StateTable@{State\-Table}}
+\subsubsection[{hop\-Count}]{\setlength{\rightskip}{0pt plus 5cm}int State\-Table\-::hop\-Count}}\label{structStateTable_ae516afd0b69c8a2b813729d60fec358d}
+Used for synchronization between phase1 and phase2 of join. \hypertarget{structStateTable_a1fc9c824d5a46581e41be343ed413a33}{\index{State\-Table@{State\-Table}!leaf\-Set@{leaf\-Set}}
+\index{leaf\-Set@{leaf\-Set}!StateTable@{State\-Table}}
+\subsubsection[{leaf\-Set}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Leaf\-Set\-Structure} State\-Table\-::leaf\-Set}}\label{structStateTable_a1fc9c824d5a46581e41be343ed413a33}
+\hyperlink{structLeafSetStructure}{Leaf\-Set\-Structure} of \hyperlink{structStateTable}{State\-Table}. \hypertarget{structStateTable_a85564c6deec324c3db3263ca08263f63}{\index{State\-Table@{State\-Table}!neighbourhood\-Set@{neighbourhood\-Set}}
+\index{neighbourhood\-Set@{neighbourhood\-Set}!StateTable@{State\-Table}}
+\subsubsection[{neighbourhood\-Set}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Neighbourhood\-Set\-Structure} State\-Table\-::neighbourhood\-Set}}\label{structStateTable_a85564c6deec324c3db3263ca08263f63}
+\hyperlink{structNeighbourhoodSetStructure}{Neighbourhood\-Set\-Structure} of \hyperlink{structStateTable}{State\-Table}. \hypertarget{structStateTable_a8ccc728c639db2384c4eed11a8f3d484}{\index{State\-Table@{State\-Table}!routing\-Table@{routing\-Table}}
+\index{routing\-Table@{routing\-Table}!StateTable@{State\-Table}}
+\subsubsection[{routing\-Table}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Routing\-Table\-Structure} State\-Table\-::routing\-Table}}\label{structStateTable_a8ccc728c639db2384c4eed11a8f3d484}
+Touring\-Table\-Structure of \hyperlink{structStateTable}{State\-Table}. 
+
+The documentation for this struct was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+header/State\-Table.\-h\item 
+src/State\-Table.\-cpp\end{DoxyCompactItemize}

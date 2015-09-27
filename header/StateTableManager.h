@@ -19,6 +19,8 @@
 using namespace std;
 
 class StateTableManager {
+	bool isInLeafSet(cell nodeCell);
+	bool isInNeighborhoodSet(cell nodeCell);
 public:
 	vector<int> hopCountVector;
 	bool zReceived;
@@ -37,11 +39,14 @@ public:
 	void updateNeighbourhoodSet(cell nodeCell);
 	bool allStateTableReceived();
 	void clearAll();
+	void send(StateTable *stateTable, string ip, string port, string key, message_type type, int hopCount);
+	void repairLeafSet(string purgedNodeId);
 };
 
 extern StateTableManager stateTableManager;
 extern pthread_mutex_t lock;
 extern pthread_mutex_t qaccess;
 extern pthread_mutex_t htaccess;
+extern pthread_mutex_t staccess;
 
 #endif /* HEADER_STATETABLEMANAGER_H_ */

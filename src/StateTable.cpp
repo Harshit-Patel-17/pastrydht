@@ -110,6 +110,8 @@ void StateTable::initializeNeighbourhoodSet() {
 
 void StateTable::init(cell localNodeCell) {
 
+	strcpy(dontAccept, "\0");
+
 	//Initialize leaf-set
 	leafSet.closestIds[L/2] = localNodeCell;
 
@@ -125,7 +127,9 @@ void StateTable::init(cell localNodeCell) {
 
 }
 
-void StateTable::purge(string nodeId) {
+bool StateTable::purge(string nodeId) {
+
+	bool purgedFromLeafSet = false;
 
 	//Purge from leaf set
 	for(int i = 0; i < L+1; i++) {
@@ -133,6 +137,7 @@ void StateTable::purge(string nodeId) {
 			strcpy(leafSet.closestIds[i].nodeId, "\0");
 			strcpy(leafSet.closestIds[i].ip, "\0");
 			strcpy(leafSet.closestIds[i].port, "\0");
+			purgedFromLeafSet = true;
 		}
 	}
 
@@ -155,6 +160,8 @@ void StateTable::purge(string nodeId) {
 			strcpy(neighbourhoodSet.closestNeighbours[i].port, "\0");
 		}
 	}
+
+	return purgedFromLeafSet;
 
 }
 

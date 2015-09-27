@@ -8,7 +8,6 @@
 #include "../header/global.h"
 
 Node localNode;
-Ui ui;
 const int keyLengthInBits = 32;
 const int b = 4;
 const int l = pow(2, b);

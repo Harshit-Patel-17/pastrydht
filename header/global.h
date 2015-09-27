@@ -31,6 +31,9 @@ using namespace boost;
 #define SOCK_WRITE_ERROR -5
 #define SOCK_CONNECT_ERROR -6
 
+enum message_type {GET, PUT, STATE_TABLE, STATE_TABLE_A, STATE_TABLE_Z, STATE_TABLE_X, STATE_TABLE_AZ, STATE_TABLE_LSET, JOIN, JOIN_A, VALUE, REDISTRIBUTE, FLOOD, REPAIR_LSET};
+enum flood_command {QUIT, SHUTDOWN};
+
 class Node {
 public:
 	string nodeIp;
@@ -49,9 +52,6 @@ public:
 	int setNode(string nodeIp, string port);
 	virtual void application(string s);
 };
-
-enum message_type {GET, PUT, STATE_TABLE, STATE_TABLE_A, STATE_TABLE_Z, STATE_TABLE_X, STATE_TABLE_AZ, JOIN, JOIN_A, VALUE, REDISTRIBUTE, FLOOD};
-enum flood_command {QUIT, SHUTDOWN};
 
 struct KeyValue {
 	char key[9];
@@ -89,10 +89,10 @@ struct Packet {
 };
 
 extern Node localNode;
-extern Ui ui;
 extern const int keyLengthInBits;
 extern const int b, l, m;
 extern const int keyLength;
 
 int shl(string s1, string s2);
+void signal_callback_handler(int signum);
 #endif /* HEADER_GLOBAL_H_ */

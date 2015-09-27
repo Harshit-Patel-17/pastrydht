@@ -48,6 +48,7 @@ typedef struct RoutingTableStructure
 
 struct StateTable {
 	int hopCount; //Useful in joining
+	char dontAccept[9]; //Useful in repairing leaf set
 	LeafSetStructure leafSet;
 	NeighbourhoodSetStructure neighbourhoodSet;
 	RoutingTableStructure routingTable;
@@ -61,7 +62,7 @@ struct StateTable {
 	virtual ~StateTable();
 
 	void init(cell localNodeCell);
-	void purge(string nodeId);
+	bool purge(string nodeId);
 	void print();
 };
 

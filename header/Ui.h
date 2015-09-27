@@ -50,4 +50,6 @@ public:
 	void displayPrompt();
 };
 
+extern Ui ui;
+
 #endif /* HEADER_UI_H_ */

@@ -129,10 +129,16 @@ void nset() {
 void dump() {
 
 	localNode.stateTable.print();
+	cout << endl << "Local Hash Table" << endl;
+	map<string, string> ::iterator it;
+	for(it = localNode.HT.begin(); it != localNode.HT.end(); it++)
+		cout << it->first << ": " << it->second << endl;
 
 }
 
 void quit() {
+
+	localNode.stateTable.purge(localNode.nodeId);
 
 	FloodCommand floodCommand;
 	char *floodCommandString;
@@ -147,11 +153,26 @@ void quit() {
 		message.push_back(floodCommandString[i]);
 
 	client.flood(localNode.nodeId, message);
+	htManager.redistribute();
 
 }
 
 void shutdown() {
 
-	client.flood(localNode.nodeId, "Shutdown");
+	FloodCommand floodCommand;
+	char *floodCommandString;
+
+	floodCommand.command = SHUTDOWN;
+	strcpy(floodCommand.arg, "\0");
+
+	floodCommandString = (char *) &floodCommand;
+
+	string message;
+	for(unsigned int i = 0; i < sizeof(FloodCommand); i++)
+		message.push_back(floodCommandString[i]);
+
+	client.flood(localNode.nodeId, message);
+
+	signal_callback_handler(0);
 
 }

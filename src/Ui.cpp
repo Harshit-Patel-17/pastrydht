@@ -7,6 +7,8 @@
 
 #include "../header/Ui.h"
 
+Ui ui;
+
 Ui::Ui() {
 
 	history = NULL;

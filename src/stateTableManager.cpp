@@ -11,6 +11,29 @@ StateTableManager stateTableManager;
 pthread_mutex_t lock;
 pthread_mutex_t qaccess;
 pthread_mutex_t htaccess;
+pthread_mutex_t staccess;
+
+bool StateTableManager::isInLeafSet(cell nodeCell) {
+
+	for(int i = 0; i < L+1; i++) {
+		if(strcmp(nodeCell.nodeId, localNode.stateTable.leafSet.closestIds[i].nodeId) == 0)
+			return true;
+	}
+
+	return false;
+
+}
+
+bool StateTableManager::isInNeighborhoodSet(cell nodeCell) {
+
+	for(int i = 0; i < M; i++) {
+		if(strcmp(nodeCell.nodeId, localNode.stateTable.neighbourhoodSet.closestNeighbours[i].nodeId) == 0)
+			return true;
+	}
+
+	return false;
+
+}
 
 void StateTableManager::updateLeafSet(pair<pair<string, StateTable*>, message_type> QElem) {
 
@@ -22,6 +45,12 @@ void StateTableManager::updateLeafSet(pair<pair<string, StateTable*>, message_ty
 }
 
 void StateTableManager::updateLeafSet(cell nodeCell) {
+
+	if(isInLeafSet(nodeCell))
+		return;
+
+	if(strcmp(localNode.stateTable.dontAccept, nodeCell.nodeId) == 0)
+		return;
 
 	if(strcmp(nodeCell.nodeId, localNode.nodeId.c_str()) < 0) {
 		int minIndex = 0;
@@ -80,6 +109,12 @@ void StateTableManager::updateNeighbourhoodSet(pair<pair<string, StateTable*>, m
 
 void StateTableManager::updateNeighbourhoodSet(cell nodeCell) {
 
+	if(isInNeighborhoodSet(nodeCell))
+		return;
+
+	if(strcmp(localNode.stateTable.dontAccept, nodeCell.nodeId) == 0)
+		return;
+
 	unsigned int localNodeId, nodeId, nodeCellNodeId;
 	sscanf(localNode.nodeId.c_str(), "%x", &localNodeId);
 
@@ -118,6 +153,79 @@ void StateTableManager::clearAll() {
 
 	zReceived = false;
 	hopCountVector.clear();
+
+}
+
+void StateTableManager::send(StateTable *stateTable, string ip, string port, string key, message_type type, int hopCount) {
+
+	stateTable->hopCount = hopCount;
+
+	char *stateTableString = (char *) stateTable;
+	string message, response;
+	for(unsigned int i = 0; i < sizeof(StateTable); i++)
+		message.push_back(stateTableString[i]);
+
+	Packet packet;
+	packet.build(localNode.nodeId, key, 0, type, message);
+
+	client.send(ip, port, packet.serialize(), &response);
+
+}
+
+void StateTableManager::repairLeafSet(string purgedNodeId) {
+
+	Packet packet;
+	string response, message;
+
+	struct NodeIdentifier *nodeIdentifier = new NodeIdentifier;
+	strcpy(nodeIdentifier->ip,localNode.nodeIp.c_str());
+	strcpy(nodeIdentifier->port,localNode.port.c_str());
+
+	char *buffer = (char *) nodeIdentifier;
+	for(unsigned int i = 0; i < sizeof(NodeIdentifier); i++)
+		message.push_back(buffer[i]);
+
+	delete nodeIdentifier;
+
+	if(purgedNodeId.compare(localNode.nodeId) < 0) {
+		//Find min from left part of leaf set
+		cell minInLeft;
+		strcpy(minInLeft.nodeId, "\0");
+		for(int i = 0; i < L/2; i++) {
+			if(strlen(localNode.stateTable.leafSet.closestIds[i].nodeId) != 0) {
+				if(strlen(minInLeft.nodeId) == 0) {
+					minInLeft = localNode.stateTable.leafSet.closestIds[i];
+				} else {
+					if(strcmp(localNode.stateTable.leafSet.closestIds[i].nodeId, minInLeft.nodeId) < 0)
+						minInLeft = localNode.stateTable.leafSet.closestIds[i];
+				}
+			}
+		}
+		if(strlen(minInLeft.nodeId) != 0) {
+			packet.build(localNode.nodeId, minInLeft.nodeId, 0, REPAIR_LSET, message);
+			client.send(minInLeft.ip, minInLeft.port, packet.serialize(), &response);
+		}
+	}
+
+	if(purgedNodeId.compare(localNode.nodeId) > 0) {
+		//Find max from left part of leaf set
+		cell maxInRight;
+		strcpy(maxInRight.nodeId, "\0");
+		for(int i = L/2+1; i < L+1; i++) {
+			if(strlen(localNode.stateTable.leafSet.closestIds[i].nodeId) != 0) {
+				if(strlen(maxInRight.nodeId) == 0) {
+					maxInRight = localNode.stateTable.leafSet.closestIds[i];
+				} else {
+					if(strcmp(localNode.stateTable.leafSet.closestIds[i].nodeId, maxInRight.nodeId) > 0)
+						maxInRight = localNode.stateTable.leafSet.closestIds[i];
+				}
+			}
+		}
+		if(strlen(maxInRight.nodeId) != 0) {
+			packet.build(localNode.nodeId, maxInRight.nodeId, 0, REPAIR_LSET, message);
+			client.send(maxInRight.ip, maxInRight.port, packet.serialize(), &response);
+		}
+	}
 
 }
 
@@ -283,7 +391,8 @@ void *stateTableManagerRunner(void *arg) {
 			int l = shl(localNode.nodeId, QElem.first.first);
 			for(int i = 0; i < 16; i++) {
 				if(strlen(localNode.stateTable.routingTable.entries[l][i].nodeId) == 0)
-					localNode.stateTable.routingTable.entries[l][i] = QElem.first.second->routingTable.entries[l][i];
+					if(strcmp(localNode.stateTable.dontAccept, QElem.first.second->routingTable.entries[l][i].nodeId) != 0)
+						localNode.stateTable.routingTable.entries[l][i] = QElem.first.second->routingTable.entries[l][i];
 			}
 
 			switch(QElem.second) {
@@ -299,8 +408,10 @@ void *stateTableManagerRunner(void *arg) {
 				break;
 
 			case STATE_TABLE_A:
+				pthread_mutex_lock(&staccess);
 				stateTableManager.updateNeighbourhoodSet(QElem);
 				stateTableManager.hopCountVector.push_back(QElem.first.second->hopCount);
+				pthread_mutex_unlock(&staccess);
 				if(stateTableManager.zReceived) {
 					if(stateTableManager.allStateTableReceived()) {
 						stateTableManager.joinPhase2();
@@ -311,9 +422,11 @@ void *stateTableManagerRunner(void *arg) {
 				break;
 
 			case STATE_TABLE_Z:
+				pthread_mutex_lock(&staccess);
 				stateTableManager.updateLeafSet(QElem);
 				stateTableManager.zReceived = true;
 				stateTableManager.hopCountVector.push_back(QElem.first.second->hopCount);
+				pthread_mutex_unlock(&staccess);
 				if(stateTableManager.allStateTableReceived()) {
 					stateTableManager.joinPhase2();
 					stateTableManager.clearAll();
@@ -322,20 +435,32 @@ void *stateTableManagerRunner(void *arg) {
 				break;
 
 			case STATE_TABLE_X:
+				pthread_mutex_lock(&staccess);
 				stateTableManager.updateLeafSet(QElem.first.second->leafSet.closestIds[L/2]);
 				stateTableManager.updateNeighbourhoodSet(QElem.first.second->leafSet.closestIds[L/2]);
+				pthread_mutex_unlock(&staccess);
 				break;
 
 			case STATE_TABLE_AZ:
+				pthread_mutex_lock(&staccess);
 				stateTableManager.updateNeighbourhoodSet(QElem);
 				stateTableManager.updateLeafSet(QElem);
 				stateTableManager.zReceived = true;
 				stateTableManager.hopCountVector.push_back(QElem.first.second->hopCount);
+				pthread_mutex_unlock(&staccess);
 				if(stateTableManager.allStateTableReceived()) {
 					stateTableManager.joinPhase2();
 					stateTableManager.clearAll();
 					stateTableManager.redistributePhase();
 				}
+				break;
+
+			case STATE_TABLE_LSET:
+				pthread_mutex_lock(&staccess);
+				stateTableManager.updateLeafSet(QElem);
+				strcpy(localNode.stateTable.dontAccept, "\0");
+				pthread_mutex_unlock(&staccess);
+				localNode.stateTable.print();
 				break;
 			}
 		}

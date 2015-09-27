@@ -20,6 +20,19 @@ HTManager::~HTManager() {
 
 void HTManager::redistribute() {
 
+	cell leafNodeCell;
+	strcpy(leafNodeCell.nodeId, "\0");
+
+	for(int i = 0; i < L+1; i++) {
+		if(strlen(localNode.stateTable.leafSet.closestIds[i].nodeId) != 0) {
+			leafNodeCell = localNode.stateTable.leafSet.closestIds[i];
+			break;
+		}
+	}
+
+	if(strlen(leafNodeCell.nodeId) == 0)
+		return;
+
 	map<string, string> temp;
 	map<string, string>::iterator it;
 
@@ -44,7 +57,7 @@ void HTManager::redistribute() {
 			message.push_back(keyValueString[i]);
 
 		packet.build(localNode.nodeId, it->first, 0, PUT, message);
-		client.send(localNode.nodeIp, localNode.port, packet.serialize(), &response);
+		client.send(leafNodeCell.ip, leafNodeCell.port, packet.serialize(), &response);
 	}
 
 }

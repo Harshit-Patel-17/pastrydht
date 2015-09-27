@@ -37,6 +37,7 @@ void *communicate(void *arg) {
 	KeyValue *keyValue;// = new KeyValue;
 	StateTable *stateTable;// = new StateTable;
 	char *stateTableString, *keyValueString;
+	message_type type;
 
 	//Start communicating
 	bzero(buffer, bufferSize);
@@ -49,42 +50,22 @@ void *communicate(void *arg) {
 
 	packetReceived.deserialize(buffer);
 	bzero(buffer, bufferSize);
-	message_type type = packetReceived.header.type;
 	map<string, string> ::iterator it;
 
-	switch(type)
+	switch(packetReceived.header.type)
 	{
 	case JOIN:
 	case JOIN_A:
 		strcpy(buffer, "join packet received");
 		count = write(newSockFd, buffer, strlen(buffer));
-
-		//Send back STATE_TABLE_A in case JOIN_A is received
-		if(type == JOIN)
-			packetToBeSentBack.header.type = STATE_TABLE;
-		else {
-			packetToBeSentBack.header.type = STATE_TABLE_A;
-			//packetReceived.header.type = JOIN;
-		}
-
 		// forward the message to the next hop
 		status = client.send(packetReceived.header.key, packetReceived.message, JOIN, packetReceived.header.hopCount + 1);
-		if(status.compare("Destination reached") == 0) {
-			if(type == JOIN_A)
-				packetToBeSentBack.header.type = STATE_TABLE_AZ;
-			else
-				packetToBeSentBack.header.type = STATE_TABLE_Z;
-		}
-
-		// send the packet(with state table) back to the newly joining node
-		localNode.stateTable.hopCount = packetReceived.header.hopCount + 1;
-		stateTableString = (char *)&(localNode.stateTable);
-		message = "";
-		for(unsigned int i = 0; i < sizeof(StateTable); i++)
-			message.push_back(stateTableString[i]);
-		packetToBeSentBack.build(localNode.nodeId, packetReceived.header.key, 0, packetToBeSentBack.header.type, message);
+		if(status.compare("Destination reached") == 0)
+			type = (packetReceived.header.type == JOIN_A) ? STATE_TABLE_AZ : STATE_TABLE_Z;
+		else
+			type = (packetReceived.header.type == JOIN_A) ? STATE_TABLE_A : STATE_TABLE;
 		nodeIdentifier = (NodeIdentifier *)packetReceived.message.c_str();
-		client.send(nodeIdentifier->ip,nodeIdentifier->port,packetToBeSentBack.serialize(),&response);
+		stateTableManager.send(&(localNode.stateTable), nodeIdentifier->ip, nodeIdentifier->port, packetReceived.header.key, type, packetReceived.header.hopCount + 1);
 		break;
 
 	case STATE_TABLE:
@@ -92,6 +73,7 @@ void *communicate(void *arg) {
 	case STATE_TABLE_Z:
 	case STATE_TABLE_X:
 	case STATE_TABLE_AZ:
+	case STATE_TABLE_LSET:
 		strcpy(buffer, "State table received");
 		count = write(newSockFd, buffer, strlen(buffer));
 		stateTable = (StateTable *) packetReceived.message.c_str();
@@ -151,21 +133,32 @@ void *communicate(void *arg) {
 		htManager.redistribute();
 		break;
 
+	case REPAIR_LSET:
+		strcpy(buffer, "repair_lset packet received");
+		count = write(newSockFd, buffer, strlen(buffer));
+		nodeIdentifier = (NodeIdentifier *)packetReceived.message.c_str();
+		stateTableManager.send(&(localNode.stateTable), nodeIdentifier->ip, nodeIdentifier->port, packetReceived.header.key, STATE_TABLE_LSET, packetReceived.header.hopCount + 1);
+		break;
+
 	case FLOOD:
 		strcpy(buffer, "flood packet received");
 		count = write(newSockFd, buffer, strlen(buffer));
 		floodCommand = (FloodCommand *) packetReceived.message.c_str();
 		cout << floodCommand->command << " " << floodCommand->arg << endl;
+		client.flood(packetReceived.header.srcNodeId, packetReceived.message);
 		switch(floodCommand->command) {
 		case QUIT:
-			localNode.stateTable.purge(floodCommand->arg);
-			localNode.stateTable.print();
+			if(localNode.stateTable.purge(floodCommand->arg)) {
+				localNode.stateTable.print();
+				strcpy(localNode.stateTable.dontAccept, floodCommand->arg);
+				stateTableManager.repairLeafSet(floodCommand->arg);
+			}
 			break;
 
 		case SHUTDOWN:
+			signal_callback_handler(0);
 			break;
 		}
-		client.flood(packetReceived.header.srcNodeId, packetReceived.message);
 		break;
 	}
 

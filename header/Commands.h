@@ -28,5 +28,7 @@ void lset();
 void routetable();
 void nset();
 void dump();
+void quit();
+void shutdown();
 
 #endif /* HEADER_COMMANDS_H_ */

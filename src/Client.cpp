@@ -146,3 +146,50 @@ string Client::send(string key, string message, message_type type, int hopCount)
 	return response;
 
 }
+
+void Client::flood(string prevKey, string message) {
+
+	Packet packet;
+	string response;
+
+	if(prevKey.compare(localNode.nodeId) <= 0) {
+		//Find min from right part of leaf set
+		cell minInRight;
+		strcpy(minInRight.nodeId, "\0");
+		for(int i = L/2+1; i < L+1; i++) {
+			if(strlen(localNode.stateTable.leafSet.closestIds[i].nodeId) != 0) {
+				if(strlen(minInRight.nodeId) == 0) {
+					minInRight = localNode.stateTable.leafSet.closestIds[i];
+				} else {
+					if(strcmp(localNode.stateTable.leafSet.closestIds[i].nodeId, minInRight.nodeId) < 0)
+						minInRight = localNode.stateTable.leafSet.closestIds[i];
+				}
+			}
+		}
+		if(strlen(minInRight.nodeId) != 0) {
+			packet.build(localNode.nodeId, minInRight.nodeId, 0, FLOOD, message);
+			client.send(minInRight.ip, minInRight.port, packet.serialize(), &response);
+		}
+	}
+
+	if(prevKey.compare(localNode.nodeId) >= 0) {
+		//Find max from left part of leaf set
+		cell maxInLeft;
+		strcpy(maxInLeft.nodeId, "\0");
+		for(int i = 0; i < L/2; i++) {
+			if(strlen(localNode.stateTable.leafSet.closestIds[i].nodeId) != 0) {
+				if(strlen(maxInLeft.nodeId) == 0) {
+					maxInLeft = localNode.stateTable.leafSet.closestIds[i];
+				} else {
+					if(strcmp(localNode.stateTable.leafSet.closestIds[i].nodeId, maxInLeft.nodeId) > 0)
+						maxInLeft = localNode.stateTable.leafSet.closestIds[i];
+				}
+			}
+		}
+		if(strlen(maxInLeft.nodeId) != 0) {
+			packet.build(localNode.nodeId, maxInLeft.nodeId, 0, FLOOD, message);
+			client.send(maxInLeft.ip, maxInLeft.port, packet.serialize(), &response);
+		}
+	}
+
+}

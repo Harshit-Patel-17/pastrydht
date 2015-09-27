@@ -125,6 +125,39 @@ void StateTable::init(cell localNodeCell) {
 
 }
 
+void StateTable::purge(string nodeId) {
+
+	//Purge from leaf set
+	for(int i = 0; i < L+1; i++) {
+		if(strcmp(nodeId.c_str(), leafSet.closestIds[i].nodeId) == 0) {
+			strcpy(leafSet.closestIds[i].nodeId, "\0");
+			strcpy(leafSet.closestIds[i].ip, "\0");
+			strcpy(leafSet.closestIds[i].port, "\0");
+		}
+	}
+
+	//Purge from routing table
+	for(int i = 0; i < 8; i++) {
+		for(int j = 0; j < 16; j++) {
+			if(strcmp(nodeId.c_str(), routingTable.entries[i][j].nodeId) == 0) {
+				strcpy(routingTable.entries[i][j].nodeId, "\0");
+				strcpy(routingTable.entries[i][j].ip, "\0");
+				strcpy(routingTable.entries[i][j].port, "\0");
+			}
+		}
+	}
+
+	//Purge from neighborhood set
+	for(int i = 0; i < M; i++) {
+		if(strcmp(nodeId.c_str(), neighbourhoodSet.closestNeighbours[i].nodeId) == 0) {
+			strcpy(neighbourhoodSet.closestNeighbours[i].nodeId, "\0");
+			strcpy(neighbourhoodSet.closestNeighbours[i].ip, "\0");
+			strcpy(neighbourhoodSet.closestNeighbours[i].port, "\0");
+		}
+	}
+
+}
+
 void StateTable::print() {
 
 	cout << "Leaf Set" << endl;
@@ -133,7 +166,7 @@ void StateTable::print() {
 	cout << "Routing Table" << endl;
 	routingTable.print();
 	cout << endl;
-	cout << "Neighbourhood Set" << endl;
+	cout << "Neighborhood Set" << endl;
 	neighbourhoodSet.print();
 	cout << endl;
 

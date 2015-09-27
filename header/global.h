@@ -50,7 +50,8 @@ public:
 	virtual void application(string s);
 };
 
-enum message_type {GET, PUT, STATE_TABLE, STATE_TABLE_A, STATE_TABLE_Z, STATE_TABLE_X, STATE_TABLE_AZ, JOIN, JOIN_A, VALUE, REDISTRIBUTE};
+enum message_type {GET, PUT, STATE_TABLE, STATE_TABLE_A, STATE_TABLE_Z, STATE_TABLE_X, STATE_TABLE_AZ, JOIN, JOIN_A, VALUE, REDISTRIBUTE, FLOOD};
+enum flood_command {QUIT, SHUTDOWN};
 
 struct KeyValue {
 	char key[9];
@@ -63,6 +64,11 @@ struct KeyValue {
 struct NodeIdentifier {
 	char ip[16];
 	char port[6];
+};
+
+struct FloodCommand {
+	flood_command command;
+	char arg[10];
 };
 
 struct Header {

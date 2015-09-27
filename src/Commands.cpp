@@ -132,3 +132,26 @@ void dump() {
 
 }
 
+void quit() {
+
+	FloodCommand floodCommand;
+	char *floodCommandString;
+
+	floodCommand.command = QUIT;
+	strcpy(floodCommand.arg, localNode.nodeId.c_str());
+
+	floodCommandString = (char *) &floodCommand;
+
+	string message;
+	for(unsigned int i = 0; i < sizeof(FloodCommand); i++)
+		message.push_back(floodCommandString[i]);
+
+	client.flood(localNode.nodeId, message);
+
+}
+
+void shutdown() {
+
+	client.flood(localNode.nodeId, "Shutdown");
+
+}

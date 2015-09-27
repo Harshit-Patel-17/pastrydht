@@ -31,10 +31,11 @@ void *communicate(void *arg) {
 	pthread_mutex_unlock(&threadCreation);
 
 	Packet packetReceived, packetToBeSentBack;
-	string response, message;
-	NodeIdentifier *nodeIdentifier = new NodeIdentifier;
-	KeyValue *keyValue = new KeyValue;
-	StateTable *stateTable = new StateTable;
+	string response, message, status;
+	NodeIdentifier *nodeIdentifier;// = new NodeIdentifier;
+	FloodCommand *floodCommand;// = new FloodCommand;
+	KeyValue *keyValue;// = new KeyValue;
+	StateTable *stateTable;// = new StateTable;
 	char *stateTableString, *keyValueString;
 
 	//Start communicating
@@ -48,7 +49,6 @@ void *communicate(void *arg) {
 
 	packetReceived.deserialize(buffer);
 	bzero(buffer, bufferSize);
-	string status;
 	message_type type = packetReceived.header.type;
 	map<string, string> ::iterator it;
 
@@ -149,6 +149,23 @@ void *communicate(void *arg) {
 		strcpy(buffer, "redistribute packet received");
 		count = write(newSockFd, buffer, strlen(buffer));
 		htManager.redistribute();
+		break;
+
+	case FLOOD:
+		strcpy(buffer, "flood packet received");
+		count = write(newSockFd, buffer, strlen(buffer));
+		floodCommand = (FloodCommand *) packetReceived.message.c_str();
+		cout << floodCommand->command << " " << floodCommand->arg << endl;
+		switch(floodCommand->command) {
+		case QUIT:
+			localNode.stateTable.purge(floodCommand->arg);
+			localNode.stateTable.print();
+			break;
+
+		case SHUTDOWN:
+			break;
+		}
+		client.flood(packetReceived.header.srcNodeId, packetReceived.message);
 		break;
 	}
 

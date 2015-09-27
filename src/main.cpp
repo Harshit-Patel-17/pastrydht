@@ -97,6 +97,20 @@ int main(void) {
 					cout << "Wrong number of arguments" << endl;
 				}
 			}
+			else if(arguments[0] == "quit") {
+				if(totalArguments == 1) {
+					quit();
+				} else {
+					cout << "Wrong number of arguments" << endl;
+				}
+			}
+			else if(arguments[0] == "shutdown") {
+				if(totalArguments == 1) {
+					shutdown();
+				} else {
+					cout << "Wrong number of arguments" << endl;
+				}
+			}
 			else {
 				cout << totalArguments << endl;
 				if(totalArguments > 0)

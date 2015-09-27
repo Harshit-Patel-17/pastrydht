@@ -61,6 +61,7 @@ struct StateTable {
 	virtual ~StateTable();
 
 	void init(cell localNodeCell);
+	void purge(string nodeId);
 	void print();
 };
 

@@ -30,7 +30,8 @@ public:
 	Client();
 	virtual ~Client();
 
-	string send(string key, string message, message_type type = PUT, int hopCount = 0);
+	string send(string key, string message, message_type type, int hopCount = 0);
+	void flood(string prevKey, string message);
 };
 
 extern Client client;

@@ -7,6 +7,28 @@
 
 #include "../header/Commands.h"
 
+bool verifyCode = false;
+string satCode = "";
+
+string md5Hex(string s) {
+
+	unsigned const char *unsignedConstS;
+	unsigned char md5S[16];
+	char md5SHex[33];
+	string md5SHexString;
+
+	unsignedConstS = reinterpret_cast<unsigned const char*>(s.c_str());
+	MD5(unsignedConstS, s.length(), md5S);
+
+	memset(md5SHex, 0, 33);
+	for(int i = 0; i < 16; i++)
+		sprintf(&md5SHex[2*i], "%02x", md5S[i]);
+
+	md5SHexString = md5SHex;
+	return md5SHexString;
+
+}
+
 void printHelp() {
 
 	//TODO: Write help text
@@ -69,7 +91,7 @@ void put(string key, string value) {
 	//Build KeyValue structure
 	strcpy(keyValue.ip, localNode.nodeIp.c_str());
 	strcpy(keyValue.port, localNode.port.c_str());
-	strcpy(keyValue.key, crcString);
+	strcpy(keyValue.key, key.c_str());
 	strcpy(keyValue.value, value.c_str());
 
 	keyValueString = (char *) &(keyValue);
@@ -97,7 +119,7 @@ void get(string key) {
 	//Build KeyValue structure
 	strcpy(keyValue.ip, localNode.nodeIp.c_str());
 	strcpy(keyValue.port, localNode.port.c_str());
-	strcpy(keyValue.key, crcString);
+	strcpy(keyValue.key, key.c_str());
 
 	keyValueString = (char *) &(keyValue);
 	for(unsigned int i = 0; i < sizeof(KeyValue); i++)
@@ -254,5 +276,43 @@ void shutdown() {
 	client.flood(localNode.nodeId, message);
 
 	signal_callback_handler(0);
+
+}
+
+void store(string day, string sat_code, int n) {
+	int dayInt = atoi(day.c_str());
+	if(dayInt < 1 || dayInt > 365) {
+		cout << "Invalid day number." << endl;
+		return;
+	}
+
+	string md5SatCodeHexString;
+	md5SatCodeHexString = md5Hex(sat_code);
+
+	int partLength = 32 / n;
+	char key[10];
+	string value;
+
+	for(int i = 0; i < n; i++) {
+		sprintf(key, "%d", (dayInt-1)*n + i);
+		value = md5SatCodeHexString.substr(i*partLength, partLength);
+		put(key, value);
+	}
+}
+
+void retrieve(string day, int n) {
+
+	int dayInt = atoi(day.c_str());
+	if(dayInt < 1 || dayInt > 365) {
+		cout << "Invalid day number." << endl;
+		return;
+	}
+
+	char key[10];
+
+	for(int i = 0; i < n; i++) {
+		sprintf(key, "%d", (dayInt-1)*n + i);
+		get(key);
+	}
 
 }

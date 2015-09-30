@@ -7,10 +7,48 @@
 
 #include "../header/Commands.h"
 #include <algorithm>
+#include <map>
 
-void Node::application(string s) {
+#define TOTAL_PARTS 4
 
-	cout << s << endl;
+void Node::application(string key, string value, bool valueFound) {
+
+	static int partsReceived = 0;
+	static int minKey = INT_MAX;
+	//static string satCodeParts[PARTS];
+	static map<int, string> parts;
+
+	int part = atoi(key.c_str());
+	if(minKey > part)
+		minKey = part;
+
+	parts[part] = value;
+	partsReceived++;
+	if(partsReceived == TOTAL_PARTS) {
+		if(valueFound == false) {
+			partsReceived = 0;
+			cout << "Launch code not found for day " << part/TOTAL_PARTS + 1;
+			return;
+		}
+
+		string receivedMd5SatCodeHex;
+		for(int i = 0; i < TOTAL_PARTS; i++)
+			receivedMd5SatCodeHex = receivedMd5SatCodeHex + parts[minKey + i];
+
+		if(verifyCode == true) {
+			string md5SatCodeHexString = md5Hex(satCode);
+			if(md5SatCodeHexString.compare(receivedMd5SatCodeHex) == 0) {
+				cout << "Valid launch code." << endl;
+			} else {
+				cout << "Invalid launch code." << endl;
+			}
+		} else {
+			cout << receivedMd5SatCodeHex << endl;
+		}
+		partsReceived = 0;
+		minKey = INT_MAX;
+		parts.clear();
+	}
 
 }
 
@@ -115,6 +153,30 @@ int main(void) {
 			else if(arguments[0] == "shutdown") {
 				if(totalArguments == 1) {
 					shutdown();
+				} else {
+					cout << "Wrong number of arguments" << endl;
+				}
+			}
+			else if(arguments[0] == "store") {
+				if(totalArguments == 3) {
+					store(arguments[1], arguments[2], TOTAL_PARTS);
+				} else {
+					cout << "Wrong number of arguments" << endl;
+				}
+			}
+			else if(arguments[0] == "verify") {
+				if(totalArguments == 3) {
+					verifyCode = true;
+					satCode =arguments[2];
+					retrieve(arguments[1], TOTAL_PARTS);
+				} else {
+					cout << "Wrong number of arguments" << endl;
+				}
+			}
+			else if(arguments[0] == "retv") {
+				if(totalArguments == 2) {
+					verifyCode = false;
+					retrieve(arguments[1], TOTAL_PARTS);
 				} else {
 					cout << "Wrong number of arguments" << endl;
 				}

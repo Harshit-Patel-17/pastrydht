@@ -93,7 +93,7 @@ void *communicate(void *arg) {
 		keyValue = (KeyValue *) packetReceived.message.c_str();
 		if(status.compare("Destination reached") == 0) {
 			pthread_mutex_lock(&htaccess);
-			localNode.HT[keyValue->key] = keyValue->value;
+			localNode.HT[packetReceived.header.key] = keyValue->value;
 			pthread_mutex_unlock(&htaccess);
 		}
 		//for(it = localNode.HT.begin(); it != localNode.HT.end(); it++)
@@ -106,11 +106,11 @@ void *communicate(void *arg) {
 		status = client.send(packetReceived.header.key, packetReceived.message, packetReceived.header.type, packetReceived.header.hopCount + 1);
 		keyValue = (KeyValue *) packetReceived.message.c_str();
 		if(status.compare("Destination reached") == 0) {
-			if(localNode.HT.find(keyValue->key) == localNode.HT.end()) {
+			if(localNode.HT.find(packetReceived.header.key) == localNode.HT.end()) {
 				keyValue->valueFound = false;
 			} else {
 				keyValue->valueFound = true;
-				strcpy(keyValue->value, localNode.HT[keyValue->key].c_str());
+				strcpy(keyValue->value, localNode.HT[packetReceived.header.key].c_str());
 			}
 			keyValueString = (char *) keyValue;
 			message = "";
@@ -125,10 +125,11 @@ void *communicate(void *arg) {
 		strcpy(buffer, "value packet received");
 		count = write(newSockFd, buffer, strlen(buffer));
 		keyValue = (KeyValue *) packetReceived.message.c_str();
-		if(keyValue->valueFound)
+		localNode.application(keyValue->key, keyValue->value, keyValue->valueFound);
+		/*if(keyValue->valueFound)
 			cout << keyValue->value << endl;
 		else
-			cout << "Key not found!" << endl;
+			cout << "Key not found!" << endl;*/
 		break;
 
 	case REDISTRIBUTE:

@@ -18,6 +18,11 @@
 
 using namespace std;
 
+extern bool verifyCode;
+extern string satCode;
+
+string md5Hex(string s);
+
 void printHelp();
 void port(string port);
 pthread_t create();
@@ -34,5 +39,7 @@ void dump();
 void dump(string ip, string port);
 void quit();
 void shutdown();
+void store(string day, string sat_code, int n);
+void retrieve(string day, int n);
 
 #endif /* HEADER_COMMANDS_H_ */

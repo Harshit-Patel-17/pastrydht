@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <math.h>
+#include <openssl/md5.h>
 #include <boost/crc.hpp>
 #include <sys/socket.h>
 #include <map>
@@ -79,14 +80,14 @@ public:
 	virtual ~Node() {}
 
 	int setNode(string nodeIp, string port); /*!< Initializes Node structure. */
-	virtual void application(string s); /*!< Virtual function. To be defined by application which uses services of pastry. */
+	virtual void application(string key, string value, bool valueFound); /*!< Virtual function. To be defined by application which uses services of pastry. */
 };
 
 
 /*! \brief Contains key-value pair along with IP and port addresses of sender.
  */
 struct KeyValue {
-	char key[9]; /*!< Hex of CRC32 hash. */
+	char key[50]; /*!< Key to be stored in DHT. */
 	char value[50]; /*!< Value corresponding to the key. */
 	char ip[16]; /*!< IP address of sender. */
 	char port[6]; /*!< Port address of sender. */

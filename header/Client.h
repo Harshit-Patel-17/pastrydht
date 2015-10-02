@@ -26,6 +26,7 @@ using namespace std;
 /*! \brief Client class to start communication with peer.
  */
 class Client {
+	int difference(string hex1, string hex2);
 public:
 	cell forward(string key); /*!< Find next hop in pastry network based on key. */
 	int send(string ip, string port, string message, string *response); /*!< Send message to peer with given ip and port. */

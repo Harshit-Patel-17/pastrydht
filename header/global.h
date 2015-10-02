@@ -57,9 +57,10 @@ enum message_type {
 	LSET,
 	ROUTETABLE,
 	NSET,
-	DUMP
+	DUMP,
+	ID
 };
-enum flood_command {QUIT, SHUTDOWN};
+enum flood_command {QUIT, SHUTDOWN, ID_REQ};
 
 
 /*! \brief Contains information pertaining to a node in pastry network.

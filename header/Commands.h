@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <string>
+#include <mutex>
 #include <stdlib.h>
 #include "../header/global.h"
 #include "../header/Server.h"
@@ -17,9 +18,6 @@
 #include "../header/StateTableManager.h"
 
 using namespace std;
-
-extern bool verifyCode;
-extern string satCode;
 
 string md5Hex(string s);
 
@@ -39,7 +37,6 @@ void dump();
 void dump(string ip, string port);
 void quit();
 void shutdown();
-void store(string day, string sat_code, int n);
-void retrieve(string day, int n);
+void finger();
 
 #endif /* HEADER_COMMANDS_H_ */

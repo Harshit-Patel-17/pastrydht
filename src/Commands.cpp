@@ -7,9 +7,6 @@
 
 #include "../header/Commands.h"
 
-bool verifyCode = false;
-string satCode = "";
-
 string md5Hex(string s) {
 
 	unsigned const char *unsignedConstS;
@@ -279,40 +276,20 @@ void shutdown() {
 
 }
 
-void store(string day, string sat_code, int n) {
-	int dayInt = atoi(day.c_str());
-	if(dayInt < 1 || dayInt > 365) {
-		cout << "Invalid day number." << endl;
-		return;
-	}
+void finger()
+{
+	FloodCommand floodCommand;
+	char *floodCommandString;
 
-	string md5SatCodeHexString;
-	md5SatCodeHexString = md5Hex(sat_code);
+	floodCommand.command = ID_REQ;
+	strcpy(floodCommand.arg, localNode.nodeId.c_str());
 
-	int partLength = 32 / n;
-	char key[10];
-	string value;
+	floodCommandString = (char *) &floodCommand;
 
-	for(int i = 0; i < n; i++) {
-		sprintf(key, "%d", (dayInt-1)*n + i);
-		value = md5SatCodeHexString.substr(i*partLength, partLength);
-		put(key, value);
-	}
-}
+	string message;
+	for(unsigned int i = 0; i < sizeof(FloodCommand); i++)
+		message.push_back(floodCommandString[i]);
 
-void retrieve(string day, int n) {
-
-	int dayInt = atoi(day.c_str());
-	if(dayInt < 1 || dayInt > 365) {
-		cout << "Invalid day number." << endl;
-		return;
-	}
-
-	char key[10];
-
-	for(int i = 0; i < n; i++) {
-		sprintf(key, "%d", (dayInt-1)*n + i);
-		get(key);
-	}
+	client.flood(localNode.nodeId, message);
 
 }

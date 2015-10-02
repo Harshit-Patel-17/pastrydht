@@ -9,10 +9,20 @@
 
 Client client;
 
+int Client::difference(string hex1, string hex2) {
+
+	unsigned int hexNum1, hexNum2;
+	sscanf(hex1.c_str(), "%x", &hexNum1);
+	sscanf(hex2.c_str(), "%x", &hexNum2);
+
+	return hexNum1 - hexNum2;
+
+}
+
 cell Client::forward(string key) {
 
 	//Check whether key lies within leaf-set
-	string minKey, maxKey;
+	string minKey = "ffffffff", maxKey = "00000000";
 	for(int i = 0; i < L+1; i++) {
 		if(strlen(localNode.stateTable.leafSet.closestIds[i].nodeId) != 0) {
 			if(strcmp(minKey.c_str(), localNode.stateTable.leafSet.closestIds[i].nodeId) > 0)
@@ -21,14 +31,15 @@ cell Client::forward(string key) {
 				maxKey = localNode.stateTable.leafSet.closestIds[i].nodeId;
 		}
 	}
-	int closestNodeIdIndex, min = INT_MAX;
+	int closestNodeIdIndex;
+	unsigned int min = UINT_MAX;
 	if(strcmp(minKey.c_str(), key.c_str()) <= 0 && strcmp(maxKey.c_str(), key.c_str()) >= 0) {
 		for(int i = 0; i < L+1; i++) {
 			if(strlen(localNode.stateTable.leafSet.closestIds[i].nodeId) != 0) {
-				int difference = abs(strcmp(key.c_str(), localNode.stateTable.leafSet.closestIds[i].nodeId));
-				if(difference < min) {
+				unsigned int absDifference = abs(difference(key.c_str(), localNode.stateTable.leafSet.closestIds[i].nodeId));
+				if(absDifference < min) {
 					closestNodeIdIndex = i;
-					min = difference;
+					min = absDifference;
 				}
 			}
 		}
@@ -36,9 +47,8 @@ cell Client::forward(string key) {
 	}
 
 	int l = shl(key, localNode.nodeId);
-
 	//Find entry in routing table
-	int row = l, column = (key[l] < 58) ? (key[l] - '0') : (key[l] - 'a' + 10);
+	int row = l, column = (key[l] <= '9') ? (key[l] - '0') : (key[l] - 'a' + 10);
 	if(strlen(localNode.stateTable.routingTable.entries[row][column].nodeId) != 0) {
 		return localNode.stateTable.routingTable.entries[row][column];
 	}

@@ -36,7 +36,7 @@ void *communicate(void *arg) {
 	FloodCommand *floodCommand;// = new FloodCommand;
 	KeyValue *keyValue;// = new KeyValue;
 	StateTable *stateTable;// = new StateTable;
-	char *stateTableString, *keyValueString;
+	char *stateTableString, *keyValueString, *nodeIdentifierString;
 	message_type type;
 
 	//Start communicating
@@ -163,11 +163,20 @@ void *communicate(void *arg) {
 		stateTableManager.send(&(localNode.stateTable), nodeIdentifier->ip, nodeIdentifier->port, packetReceived.header.key, type, packetReceived.header.hopCount + 1);
 		break;
 
+	case ID:
+		strcpy(buffer, "ID packet received");
+		count = write(newSockFd, buffer, strlen(buffer));
+		status = client.send(packetReceived.header.key, packetReceived.message, ID, packetReceived.header.hopCount + 1);
+		if(status.compare("Destination reached") == 0) {
+			nodeIdentifier = (NodeIdentifier *)packetReceived.message.c_str();
+			cout << nodeIdentifier->ip << ":" << nodeIdentifier->port << endl;
+		}
+		break;
+
 	case FLOOD:
 		strcpy(buffer, "flood packet received");
 		count = write(newSockFd, buffer, strlen(buffer));
 		floodCommand = (FloodCommand *) packetReceived.message.c_str();
-		cout << floodCommand->command << " " << floodCommand->arg << endl;
 		client.flood(packetReceived.header.srcNodeId, packetReceived.message);
 		switch(floodCommand->command) {
 		case QUIT:
@@ -180,6 +189,18 @@ void *communicate(void *arg) {
 
 		case SHUTDOWN:
 			signal_callback_handler(0);
+			break;
+
+		case ID_REQ:
+			cout << "Finger received" << endl;
+			nodeIdentifier = new NodeIdentifier;
+			strcpy(nodeIdentifier->ip, localNode.nodeIp.c_str());
+			strcpy(nodeIdentifier->port, localNode.port.c_str());
+			nodeIdentifierString = (char *) nodeIdentifier;
+			message = "";
+			for(unsigned int i = 0; i < sizeof(NodeIdentifier); i++)
+				message.push_back(nodeIdentifierString[i]);
+			client.send(floodCommand->arg, message, ID);
 			break;
 		}
 		break;

@@ -113,6 +113,8 @@ void get(string key) {
 	crc.process_bytes(key.data(), key.size());
 	sprintf(crcString, "%08x", crc.checksum());
 
+	cout << crcString << endl;
+
 	//Build KeyValue structure
 	strcpy(keyValue.ip, localNode.nodeIp.c_str());
 	strcpy(keyValue.port, localNode.port.c_str());
@@ -243,7 +245,7 @@ void quit() {
 	char *floodCommandString;
 
 	floodCommand.command = QUIT;
-	strcpy(floodCommand.arg, localNode.nodeId.c_str());
+	strcpy(floodCommand.arg1, localNode.nodeId.c_str());
 
 	floodCommandString = (char *) &floodCommand;
 
@@ -262,7 +264,7 @@ void shutdown() {
 	char *floodCommandString;
 
 	floodCommand.command = SHUTDOWN;
-	strcpy(floodCommand.arg, "\0");
+	strcpy(floodCommand.arg1, "\0");
 
 	floodCommandString = (char *) &floodCommand;
 
@@ -281,8 +283,30 @@ void finger()
 	FloodCommand floodCommand;
 	char *floodCommandString;
 
-	floodCommand.command = ID_REQ;
-	strcpy(floodCommand.arg, localNode.nodeId.c_str());
+	floodCommand.command = FLOOD_ID_REQ;
+	strcpy(floodCommand.arg1, localNode.nodeIp.c_str());
+	strcpy(floodCommand.arg2, localNode.port.c_str());
+
+	floodCommandString = (char *) &floodCommand;
+
+	string message;
+	for(unsigned int i = 0; i < sizeof(FloodCommand); i++)
+		message.push_back(floodCommandString[i]);
+
+	client.flood(localNode.nodeId, message);
+
+}
+
+void dumpall()
+{
+	localNode.stateTable.print();
+
+	FloodCommand floodCommand;
+	char *floodCommandString;
+
+	floodCommand.command = FLOOD_DUMP_REQ;
+	strcpy(floodCommand.arg1, localNode.nodeIp.c_str());
+	strcpy(floodCommand.arg2, localNode.port.c_str());
 
 	floodCommandString = (char *) &floodCommand;
 

@@ -166,11 +166,8 @@ void *communicate(void *arg) {
 	case ID:
 		strcpy(buffer, "ID packet received");
 		count = write(newSockFd, buffer, strlen(buffer));
-		status = client.send(packetReceived.header.key, packetReceived.message, ID, packetReceived.header.hopCount + 1);
-		if(status.compare("Destination reached") == 0) {
-			nodeIdentifier = (NodeIdentifier *)packetReceived.message.c_str();
-			cout << nodeIdentifier->ip << ":" << nodeIdentifier->port << endl;
-		}
+		nodeIdentifier = (NodeIdentifier *)packetReceived.message.c_str();
+		cout << nodeIdentifier->ip << ":" << nodeIdentifier->port << endl;
 		break;
 
 	case FLOOD:
@@ -180,10 +177,10 @@ void *communicate(void *arg) {
 		client.flood(packetReceived.header.srcNodeId, packetReceived.message);
 		switch(floodCommand->command) {
 		case QUIT:
-			if(localNode.stateTable.purge(floodCommand->arg)) {
+			if(localNode.stateTable.purge(floodCommand->arg1)) {
 				localNode.stateTable.print();
-				strcpy(localNode.stateTable.dontAccept, floodCommand->arg);
-				stateTableManager.repairLeafSet(floodCommand->arg);
+				strcpy(localNode.stateTable.dontAccept, floodCommand->arg1);
+				stateTableManager.repairLeafSet(floodCommand->arg1);
 			}
 			break;
 
@@ -191,8 +188,7 @@ void *communicate(void *arg) {
 			signal_callback_handler(0);
 			break;
 
-		case ID_REQ:
-			cout << "Finger received" << endl;
+		case FLOOD_ID_REQ:
 			nodeIdentifier = new NodeIdentifier;
 			strcpy(nodeIdentifier->ip, localNode.nodeIp.c_str());
 			strcpy(nodeIdentifier->port, localNode.port.c_str());
@@ -200,7 +196,12 @@ void *communicate(void *arg) {
 			message = "";
 			for(unsigned int i = 0; i < sizeof(NodeIdentifier); i++)
 				message.push_back(nodeIdentifierString[i]);
-			client.send(floodCommand->arg, message, ID);
+			packetToBeSentBack.build(localNode.nodeId, "ffffffff", 0, ID, message);
+			client.send(floodCommand->arg1, floodCommand->arg2, packetToBeSentBack.serialize(), &response);
+			break;
+
+		case FLOOD_DUMP_REQ:
+			stateTableManager.send(&(localNode.stateTable), floodCommand->arg1, floodCommand->arg2, packetReceived.header.key, DUMP, packetReceived.header.hopCount + 1);
 			break;
 		}
 		break;

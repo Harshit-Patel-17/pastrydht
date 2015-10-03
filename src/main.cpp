@@ -9,10 +9,10 @@
 #include <algorithm>
 #include <map>
 
-#define TOTAL_PARTS 4
+#define TOTAL_PARTS 8
 
-enum get_mode {VERIFY, RETV, GETALL};
-get_mode mode = RETV;
+enum get_mode {VERIFY, RETV, GETALL, GETVAL};
+get_mode mode;
 string satCode = "";
 mutex retrieveLock;
 
@@ -81,49 +81,56 @@ void Node::application(string key, string value, bool valueFound) {
 	static int minKey = INT_MAX;
 	static map<int, string> parts;
 
-	int part = atoi(key.c_str());
-	if(minKey > part)
-		minKey = part;
+	if(mode == GETVAL){
+		if(valueFound)
+			cout << value << endl;
+		else
+			cout << "Value not found for key " << key << endl;
+	} else {
+		int part = atoi(key.c_str());
+		if(minKey > part)
+			minKey = part;
 
-	parts[part] = value;
-	partsReceived++;
-	if(partsReceived == TOTAL_PARTS) {
-		string receivedMd5SatCodeHex;
-		for(int i = 0; i < TOTAL_PARTS; i++)
-			receivedMd5SatCodeHex = receivedMd5SatCodeHex + parts[minKey + i];
-		switch(mode)
-		{
-		case VERIFY:
-			if(valueFound == false)
-				cout << "Launch code not found for day " << part/TOTAL_PARTS + 1;
-			else {
-				string md5SatCodeHexString = md5Hex(satCode);
-				if(md5SatCodeHexString.compare(receivedMd5SatCodeHex) == 0)
-					cout << "Valid launch code." << endl;
+		parts[part] = value;
+		partsReceived++;
+		if(partsReceived == TOTAL_PARTS) {
+			string receivedMd5SatCodeHex;
+			for(int i = 0; i < TOTAL_PARTS; i++)
+				receivedMd5SatCodeHex = receivedMd5SatCodeHex + parts[minKey + i];
+			switch(mode)
+			{
+			case VERIFY:
+				if(valueFound == false)
+					cout << "Launch code not found for day " << part/TOTAL_PARTS + 1;
+				else {
+					string md5SatCodeHexString = md5Hex(satCode);
+					if(md5SatCodeHexString.compare(receivedMd5SatCodeHex) == 0)
+						cout << "Valid launch code." << endl;
+					else
+						cout << "Invalid launch code." << endl;
+				}
+				break;
+
+			case RETV:
+				if(valueFound == false)
+					cout << "Launch code not found for day " << part/TOTAL_PARTS + 1 << endl;
 				else
-					cout << "Invalid launch code." << endl;
+					cout << receivedMd5SatCodeHex << endl;
+				break;
+
+			case GETALL:
+				if(valueFound == false)
+					cout << part/TOTAL_PARTS + 1 << ": " << "MISSING" << endl;
+				else
+					cout << part/TOTAL_PARTS + 1 << ": " << receivedMd5SatCodeHex << endl;
+				break;
 			}
-			break;
 
-		case RETV:
-			if(valueFound == false)
-				cout << "Launch code not found for day " << part/TOTAL_PARTS + 1;
-			else
-				cout << receivedMd5SatCodeHex << endl;
-			break;
-
-		case GETALL:
-			if(valueFound == false)
-				cout << part/TOTAL_PARTS + 1 << ": " << "MISSING" << endl;
-			else
-				cout << part/TOTAL_PARTS + 1 << ": " << receivedMd5SatCodeHex << endl;
-			break;
+			partsReceived = 0;
+			minKey = INT_MAX;
+			parts.clear();
+			retrieveLock.unlock();
 		}
-
-		partsReceived = 0;
-		minKey = INT_MAX;
-		parts.clear();
-		retrieveLock.unlock();
 	}
 }
 
@@ -177,6 +184,7 @@ int main(void) {
 			}
 			else if(arguments[0] == "get") {
 				if(totalArguments == 2) {
+					mode = GETVAL;
 					get(arguments[1]);
 				} else {
 					cout << "Wrong number of arguments" << endl;
@@ -235,6 +243,13 @@ int main(void) {
 			else if(arguments[0] == "finger") {
 				if(totalArguments == 1) {
 					finger();
+				} else {
+					cout << "Wrong number of arguments" << endl;
+				}
+			}
+			else if(arguments[0] == "dumpall") {
+				if(totalArguments == 1) {
+					dumpall();
 				} else {
 					cout << "Wrong number of arguments" << endl;
 				}

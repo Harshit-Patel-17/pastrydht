@@ -60,7 +60,7 @@ enum message_type {
 	DUMP,
 	ID
 };
-enum flood_command {QUIT, SHUTDOWN, ID_REQ};
+enum flood_command {QUIT, SHUTDOWN, FLOOD_ID_REQ, FLOOD_DUMP_REQ};
 
 
 /*! \brief Contains information pertaining to a node in pastry network.
@@ -106,7 +106,8 @@ struct NodeIdentifier {
  */
 struct FloodCommand {
 	flood_command command; /*!< Flood command. */
-	char arg[10]; /*!< Optional argument. */
+	char arg1[10]; /*!< Optional argument. */
+	char arg2[10]; /*!< Optional argument. */
 };
 
 /*! \brief Header of packet to be sent over network.

@@ -38,5 +38,6 @@ void dump(string ip, string port);
 void quit();
 void shutdown();
 void finger();
+void dumpall();
 
 #endif /* HEADER_COMMANDS_H_ */

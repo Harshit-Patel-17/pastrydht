@@ -12,7 +12,7 @@ void LeafSetStructure::print() {
 	for(int i=0;i<L+1;i++)
 	{
 		if(strlen(closestIds[i].nodeId) == 0)
-			cout << "xxxxxxxx ";
+			cout << "-------- ";
 		else
 			cout << closestIds[i].nodeId << " ";
 	}
@@ -26,7 +26,7 @@ void NeighbourhoodSetStructure::print() {
 	for(int i=0;i<M;i++)
 	{
 		if(strlen(closestNeighbours[i].nodeId) == 0)
-			cout << "xxxxxxxx ";
+			cout << "-------- ";
 		else
 			cout << closestNeighbours[i].nodeId << " ";
 	}
@@ -41,7 +41,7 @@ void RoutingTableStructure::print() {
 		for(int j=0;j<16;j++)
 		{
 			if(strlen(entries[i][j].nodeId) == 0)
-				cout << "xxxxxxxx ";
+				cout << "-------- ";
 			else
 				cout << entries[i][j].nodeId << " ";
 		}
@@ -167,6 +167,11 @@ bool StateTable::purge(string nodeId) {
 
 void StateTable::print() {
 
+	string ip = leafSet.closestIds[L/2].ip;
+	string port = leafSet.closestIds[L/2].port;
+	cout << "================================================================"
+			<< ip << ":" << port
+			<< "================================================================" << endl;
 	cout << "Leaf Set" << endl;
 	leafSet.print();
 	cout << endl;

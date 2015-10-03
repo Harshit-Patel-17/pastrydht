@@ -61,7 +61,8 @@ cell Client::forward(string key) {
 	for(int i = 0; i < L+1; i++) {
 		if(strlen(localNode.stateTable.leafSet.closestIds[i].nodeId) != 0) {
 			sscanf(localNode.stateTable.leafSet.closestIds[i].nodeId, "%x", &cellNodeId);
-			if(shl(localNode.stateTable.leafSet.closestIds[i].nodeId, key) >= l && (cellNodeId ^ destNodeId) < (localNodeId ^ destNodeId))
+			//if(shl(localNode.stateTable.leafSet.closestIds[i].nodeId, key) >= l && (cellNodeId ^ destNodeId) < (localNodeId ^ destNodeId))
+			if(shl(localNode.stateTable.leafSet.closestIds[i].nodeId, key) >= l && abs(int(cellNodeId - destNodeId)) < abs(int(localNodeId - destNodeId)))
 				return localNode.stateTable.leafSet.closestIds[i];
 		}
 	}
@@ -70,7 +71,8 @@ cell Client::forward(string key) {
 		for(int j = 0; j < 16; j++) {
 			if(strlen(localNode.stateTable.routingTable.entries[i][j].nodeId) != 0) {
 				sscanf(localNode.stateTable.routingTable.entries[i][j].nodeId, "%x", &cellNodeId);
-				if(shl(localNode.stateTable.routingTable.entries[i][j].nodeId, key) >= l && (cellNodeId ^ destNodeId) < (localNodeId ^ destNodeId))
+				//if(shl(localNode.stateTable.routingTable.entries[i][j].nodeId, key) >= l && (cellNodeId ^ destNodeId) < (localNodeId ^ destNodeId))
+				if(shl(localNode.stateTable.routingTable.entries[i][j].nodeId, key) >= l && abs(int(cellNodeId - destNodeId)) < abs(int(localNodeId - destNodeId)))
 					return localNode.stateTable.routingTable.entries[i][j];
 			}
 		}
@@ -79,7 +81,8 @@ cell Client::forward(string key) {
 	for(int i = 0; i < M; i++) {
 		if(strlen(localNode.stateTable.neighbourhoodSet.closestNeighbours[i].nodeId) != 0) {
 			sscanf(localNode.stateTable.neighbourhoodSet.closestNeighbours[i].nodeId, "%x", &cellNodeId);
-			if(shl(localNode.stateTable.neighbourhoodSet.closestNeighbours[i].nodeId, key) >= l && (cellNodeId ^ destNodeId) < (localNodeId ^ destNodeId))
+			//if(shl(localNode.stateTable.neighbourhoodSet.closestNeighbours[i].nodeId, key) >= l && (cellNodeId ^ destNodeId) < (localNodeId ^ destNodeId))
+			if(shl(localNode.stateTable.neighbourhoodSet.closestNeighbours[i].nodeId, key) >= l && abs(int(cellNodeId - destNodeId)) < abs(int(localNodeId - destNodeId)))
 				return localNode.stateTable.neighbourhoodSet.closestNeighbours[i];
 		}
 	}

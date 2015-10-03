@@ -22,7 +22,7 @@ pthread_mutex_t threadCreation;
 
 void *communicate(void *arg) {
 
-	int *retVal = new int;
+	int retVal;
 	int newSockFd = *(int *)arg;
 	const unsigned int bufferSize = 8*1024;
 	char buffer[bufferSize];
@@ -43,9 +43,9 @@ void *communicate(void *arg) {
 	bzero(buffer, bufferSize);
 	count = read(newSockFd, buffer, bufferSize);
 	if(count < 0) {
-		*retVal = SOCK_READ_ERROR;
+		retVal = SOCK_READ_ERROR;
 		close(newSockFd);
-		pthread_exit((void *) retVal);
+		pthread_exit((void *) &retVal);
 	}
 
 	packetReceived.deserialize(buffer);
@@ -196,6 +196,7 @@ void *communicate(void *arg) {
 			message = "";
 			for(unsigned int i = 0; i < sizeof(NodeIdentifier); i++)
 				message.push_back(nodeIdentifierString[i]);
+			delete nodeIdentifier;
 			packetToBeSentBack.build(localNode.nodeId, "ffffffff", 0, ID, message);
 			client.send(floodCommand->arg1, floodCommand->arg2, packetToBeSentBack.serialize(), &response);
 			break;
@@ -213,7 +214,7 @@ void *communicate(void *arg) {
 
 void *serverRunner(void *arg) {
 
-	int *retVal = new int;
+	int retVal;
 
 	Node *node = (Node *) arg;
 	int sockFd, newSockFd, port;
@@ -224,8 +225,8 @@ void *serverRunner(void *arg) {
 	sockFd = socket(AF_INET, SOCK_STREAM, 0);
 	localNode.serverSockFd = sockFd; //Register server socket
 	if(sockFd < 0) {
-		*retVal = SOCK_CREATE_ERROR;
-		pthread_exit((void *) retVal);
+		retVal = SOCK_CREATE_ERROR;
+		pthread_exit((void *) &retVal);
 	}
 
 	//Initialize socket structure
@@ -237,9 +238,9 @@ void *serverRunner(void *arg) {
 
 	//Bind the host address with socket
 	if(bind(sockFd, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
-		*retVal = SOCK_BIND_ERROR;
+		retVal = SOCK_BIND_ERROR;
 		close(sockFd);
-		pthread_exit((void *) retVal);
+		pthread_exit((void *) &retVal);
 	}
 
 	while(1) {
@@ -251,9 +252,9 @@ void *serverRunner(void *arg) {
 		pthread_mutex_lock(&threadCreation);
 		newSockFd = accept(sockFd, (struct sockaddr *) &clientAddr, &clientLen);
 		if(newSockFd < 0) {
-			*retVal = SOCK_ACCEPT_ERROR;
+			retVal = SOCK_ACCEPT_ERROR;
 			close(sockFd);
-			pthread_exit((void *) retVal);
+			pthread_exit((void *) &retVal);
 		}
 
 		pthread_t communicationThreadId;
@@ -261,7 +262,6 @@ void *serverRunner(void *arg) {
 	}
 	close(sockFd);
 	localNode.serverSockFd = -1; //Server socket closed
-	delete retVal;
 	pthread_exit(0);
 
 }

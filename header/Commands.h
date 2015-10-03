@@ -10,8 +10,12 @@
 
 #include <iostream>
 #include <string>
-#include <mutex>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <ifaddrs.h>
+#include <netinet/in.h>
+#include <string.h>
+#include <arpa/inet.h>
 #include "../header/global.h"
 #include "../header/Server.h"
 #include "../header/Client.h"
@@ -21,6 +25,7 @@ using namespace std;
 
 string md5Hex(string s);
 
+string getIp();
 void printHelp();
 void port(string port);
 pthread_t create();

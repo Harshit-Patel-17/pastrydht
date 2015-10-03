@@ -74,9 +74,11 @@ public:
 	map<string, string> HT; /*!< Local Hash Table. */
 	int serverSockFd; /*!< File descriptor of server socket. */
 	bool isNodeInitialized; /*!< Check if structure is initialized. */
+	bool isNodeJoined; /*!< Check if node is joined to some pastry network. */
 	Node() {
 		serverSockFd = -1;
 		isNodeInitialized = false;
+		isNodeJoined = false;
 	}
 	virtual ~Node() {}
 

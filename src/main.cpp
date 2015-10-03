@@ -6,15 +6,21 @@
  */
 
 #include "../header/Commands.h"
+#include <unistd.h>
 #include <algorithm>
 #include <map>
+#include <condition_variable>
+#include <mutex>
 
-#define TOTAL_PARTS 8
+#define TOTAL_PARTS 4
+#define SLEEP_TIME 5000
 
-enum get_mode {VERIFY, RETV, GETALL, GETVAL};
+enum get_mode {STORE, VERIFY, RETV, GETALL, GETVAL};
 get_mode mode;
 string satCode = "";
 mutex retrieveLock;
+condition_variable storeCV;
+mutex storeMutex;
 
 void store(string day, string sat_code, int n) {
 	int dayInt = atoi(day.c_str());
@@ -43,6 +49,7 @@ void retrieve(string day, int n) {
 	int dayInt = atoi(day.c_str());
 	if(dayInt < 1 || dayInt > 365) {
 		cout << "Invalid day number." << endl;
+		retrieveLock.unlock();
 		return;
 	}
 
@@ -67,11 +74,18 @@ void getall(string d1, string d2, int n)
 		D2 = temp;
 	}
 
+	if(D1 < 0 || D2 > 365)
+	{
+		cout << "Invalid range of days" << endl;
+		return;
+	}
+
 	for(int i = D1; i <= D2; i++)
 	{
 		char day[4];
 		sprintf(day, "%d", i);
 		retrieve(day, n);
+		usleep(1000);
 	}
 }
 
@@ -80,6 +94,7 @@ void Node::application(string key, string value, bool valueFound) {
 	static int partsReceived = 0;
 	static int minKey = INT_MAX;
 	static map<int, string> parts;
+	char day[4], response;
 
 	if(mode == GETVAL){
 		if(valueFound)
@@ -123,6 +138,20 @@ void Node::application(string key, string value, bool valueFound) {
 					cout << part/TOTAL_PARTS + 1 << ": " << "MISSING" << endl;
 				else
 					cout << part/TOTAL_PARTS + 1 << ": " << receivedMd5SatCodeHex << endl;
+				break;
+
+			case STORE:
+				sprintf(day, "%d", part/TOTAL_PARTS + 1);
+				if(valueFound == false)
+					store(day, satCode, TOTAL_PARTS);
+				else {
+					cout << "Launch code for day " << part/TOTAL_PARTS + 1 << " already exist." << endl;
+					cout << "Overwrite?(y/n) ";
+					cin >> response;
+					if(response == 'y' || response == 'Y')
+						store(day, satCode, TOTAL_PARTS);
+				}
+				storeCV.notify_one();
 				break;
 			}
 
@@ -186,6 +215,7 @@ int main(void) {
 				if(totalArguments == 2) {
 					mode = GETVAL;
 					get(arguments[1]);
+					usleep(SLEEP_TIME);
 				} else {
 					cout << "Wrong number of arguments" << endl;
 				}
@@ -195,6 +225,7 @@ int main(void) {
 					lset();
 				} else if(totalArguments == 3) {
 					lset(arguments[1], arguments[2]);
+					usleep(SLEEP_TIME);
 				} else {
 					cout << "Wrong number of arguments" << endl;
 				}
@@ -204,6 +235,7 @@ int main(void) {
 					routetable();
 				} else if(totalArguments == 3) {
 					routetable(arguments[1], arguments[2]);
+					usleep(SLEEP_TIME);
 				} else {
 					cout << "Wrong number of arguments" << endl;
 				}
@@ -213,6 +245,7 @@ int main(void) {
 					nset();
 				} else if(totalArguments == 3) {
 					nset(arguments[1], arguments[2]);
+					usleep(SLEEP_TIME);
 				} else {
 					cout << "Wrong number of arguments" << endl;
 				}
@@ -222,6 +255,7 @@ int main(void) {
 					dump();
 				} else if(totalArguments == 3) {
 					dump(arguments[1], arguments[2]);
+					usleep(SLEEP_TIME);
 				} else {
 					cout << "Wrong number of arguments" << endl;
 				}
@@ -243,6 +277,7 @@ int main(void) {
 			else if(arguments[0] == "finger") {
 				if(totalArguments == 1) {
 					finger();
+					usleep(SLEEP_TIME);
 				} else {
 					cout << "Wrong number of arguments" << endl;
 				}
@@ -250,13 +285,18 @@ int main(void) {
 			else if(arguments[0] == "dumpall") {
 				if(totalArguments == 1) {
 					dumpall();
+					usleep(SLEEP_TIME);
 				} else {
 					cout << "Wrong number of arguments" << endl;
 				}
 			}
 			else if(arguments[0] == "store") {
 				if(totalArguments == 3) {
-					store(arguments[1], arguments[2], TOTAL_PARTS);
+					mode = STORE;
+					satCode = arguments[2];
+					retrieve(arguments[1], TOTAL_PARTS);
+					unique_lock<mutex> lk(storeMutex);
+					storeCV.wait(lk);
 				} else {
 					cout << "Wrong number of arguments" << endl;
 				}
@@ -264,8 +304,9 @@ int main(void) {
 			else if(arguments[0] == "verify") {
 				if(totalArguments == 3) {
 					mode = VERIFY;
-					satCode =arguments[2];
+					satCode = arguments[2];
 					retrieve(arguments[1], TOTAL_PARTS);
+					usleep(SLEEP_TIME);
 				} else {
 					cout << "Wrong number of arguments" << endl;
 				}
@@ -274,6 +315,7 @@ int main(void) {
 				if(totalArguments == 2) {
 					mode = RETV;
 					retrieve(arguments[1], TOTAL_PARTS);
+					usleep(SLEEP_TIME);
 				} else {
 					cout << "Wrong number of arguments" << endl;
 				}
@@ -282,6 +324,7 @@ int main(void) {
 				if(totalArguments == 3) {
 					mode = GETALL;
 					getall(arguments[1], arguments[2], TOTAL_PARTS);
+					usleep(SLEEP_TIME);
 				} else {
 					cout << "Wrong number of arguments" << endl;
 				}

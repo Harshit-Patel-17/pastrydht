@@ -7,6 +7,40 @@
 
 #include "../header/Commands.h"
 
+string getIp() {
+
+	struct ifaddrs * ifAddrStruct=NULL;
+	struct ifaddrs * ifa=NULL;
+	void * tmpAddrPtr=NULL;
+	map<string, string> ip_addrs;
+
+	getifaddrs(&ifAddrStruct);
+
+	for (ifa = ifAddrStruct; ifa != NULL; ifa = ifa->ifa_next) {
+		if (!ifa->ifa_addr) {
+			continue;
+		}
+		if (ifa->ifa_addr->sa_family == AF_INET) { // check it is IP4
+			// is a valid IP4 Address
+			tmpAddrPtr=&((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
+			char addressBuffer[INET_ADDRSTRLEN];
+			inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
+			ip_addrs[ifa->ifa_name] = addressBuffer;
+		}
+	}
+
+	if (ifAddrStruct!=NULL) freeifaddrs(ifAddrStruct);
+
+	if(ip_addrs.find("eth0") != ip_addrs.end())
+		return ip_addrs["eth0"];
+
+	if(ip_addrs.find("wlan0") != ip_addrs.end())
+			return ip_addrs["wlan0"];
+
+	return ip_addrs["lo"];
+
+}
+
 string md5Hex(string s) {
 
 	unsigned const char *unsignedConstS;
@@ -28,8 +62,26 @@ string md5Hex(string s) {
 
 void printHelp() {
 
-	//TODO: Write help text
-	cout << "Program Help" << endl;
+    cout << "                   help: Provides a list of commands and their usage details." << endl;
+    cout << "               port <x>: Listen on this port for other instances of the program over different nodes." << endl;
+	cout << "                 create: creates the pastry henceforth will be known by this node’s address and decided port." << endl;
+	cout << "           join <x> <p>: Join the pastry with x address and port p." << endl;
+	cout << "      put <key> <value>: insert the given <key,value> pair in the pastry." << endl;
+	cout << "              get <key>: returns the value corresponding to the key, if one was previously inserted in the node." << endl;
+	cout << "                   lset: Prints the leafset of current node." << endl;
+	cout << "             routetable: Prints the routing table of current node." << endl;
+	cout << "                   nset: Prints the neighbourhood set of current node." << endl;
+	cout << "                   dump: display all information pertaining to current node." << endl;
+    cout << "                   quit: Shuts down this node, not the pastry, distributing the data." << endl;
+    cout << "               shutdown: shuts down the entire pastry, no node should have any keys or pastry data, the programs at all the terminals should get closed on the notification." << endl;
+	cout << "           lset <x> <p>: Prints the leafset of node at address x and port p" << endl;
+	cout << "     routetable <x> <p>: Prints the routing table of node at address x and port p." << endl;
+	cout << "           nset <x> <p>: Prints the neighbourhood set of node at address x and port p." << endl;
+	cout << "           dump <x> <p>: display all information pertaining to node at address x and port p." << endl;
+	cout << "                 finger: a list of addresses of all nodes on this pastry." << endl;
+	cout << "                dumpall: All information of all the nodes." << endl;
+	cout << " store <DAY> <SAT-CODE>: Stores the launch code as parts on the network. DAY ranges from 1-365 and SAT-CODE is any valid combination of ascii characters. If the launch code is already stored, displays warning first and if allowed to proceed, over-writes it." << endl;
+	cout << "verify <DAY> <SAT-CODE>: Verify if this SAT-CODE is actually valid for the given day. If the launch code is not stored on the network, reports error." << endl;
 
 }
 
@@ -37,7 +89,7 @@ void port(string port) {
 
 	int portNum = atoi(port.c_str());
 	if(portNum > 1024 && portNum < 65536) {
-		localNode.setNode("127.0.0.1", port);
+		localNode.setNode(getIp(), port);
 		cout << "Port set to " << port << endl;
 	} else {
 		cout << "Invalid port number" << endl;
@@ -46,6 +98,16 @@ void port(string port) {
 }
 
 pthread_t create() {
+
+	if(localNode.isNodeInitialized == false) {
+		cout << "Node ip and port are not initialized." << endl;
+		return -1;
+	}
+
+	if(localNode.serverSockFd >= 0) {
+		cout << "Server is already running." << endl;
+		return -1;
+	}
 
 	pthread_t serverId = server.start(&localNode);
 	if(serverId < 0)
@@ -67,7 +129,15 @@ pthread_t create() {
 
 void join(string ip, string port) {
 
-	//TODO: Check correctness of ip and port format
+	if(localNode.isNodeInitialized == false) {
+		cout << "Node ip and port are not initialized." << endl;
+		return;
+	}
+
+	if(localNode.isNodeJoined == true) {
+		cout << "Node is already joined to the pastry network." << endl;
+		return;
+	}
 	stateTableManager.joinPhase1(ip, port);
 
 }
@@ -112,8 +182,6 @@ void get(string key) {
 	//Compute CRC32 hash of key
 	crc.process_bytes(key.data(), key.size());
 	sprintf(crcString, "%08x", crc.checksum());
-
-	cout << crcString << endl;
 
 	//Build KeyValue structure
 	strcpy(keyValue.ip, localNode.nodeIp.c_str());
@@ -212,8 +280,12 @@ void dump() {
 	localNode.stateTable.print();
 	cout << endl << "Local Hash Table" << endl;
 	map<string, string> ::iterator it;
-	for(it = localNode.HT.begin(); it != localNode.HT.end(); it++)
+	int totalEntries = 0;
+	for(it = localNode.HT.begin(); it != localNode.HT.end(); it++) {
 		cout << it->first << ": " << it->second << endl;
+		totalEntries++;
+	}
+	cout << endl << "Total entries in Local Hash Table: " << totalEntries << endl;
 
 }
 

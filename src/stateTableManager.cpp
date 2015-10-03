@@ -242,6 +242,8 @@ StateTableManager::~StateTableManager() {
 
 void StateTableManager::joinPhase1(string destNodeIp, string destPort) {
 
+	localNode.isNodeJoined = true;
+
 	Packet packet;
 	packet.header.srcNodeId = localNode.nodeId;
 	packet.header.key = localNode.nodeId;

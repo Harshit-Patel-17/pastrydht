@@ -9,13 +9,25 @@
 
 Client client;
 
-int Client::difference(string hex1, string hex2) {
+unsigned int Client::abs_difference(string hex1, string hex2) {
 
 	unsigned int hexNum1, hexNum2;
 	sscanf(hex1.c_str(), "%x", &hexNum1);
 	sscanf(hex2.c_str(), "%x", &hexNum2);
 
-	return hexNum1 - hexNum2;
+	if(hexNum1 >= hexNum2)
+		return hexNum1 - hexNum2;
+	else
+		return hexNum2 - hexNum1;
+
+}
+
+unsigned int Client::abs_difference(unsigned int hexNum1, unsigned int hexNum2) {
+
+	if(hexNum1 >= hexNum2)
+		return hexNum1 - hexNum2;
+	else
+		return hexNum2 - hexNum1;
 
 }
 
@@ -36,7 +48,7 @@ cell Client::forward(string key) {
 	if(strcmp(minKey.c_str(), key.c_str()) <= 0 && strcmp(maxKey.c_str(), key.c_str()) >= 0) {
 		for(int i = 0; i < L+1; i++) {
 			if(strlen(localNode.stateTable.leafSet.closestIds[i].nodeId) != 0) {
-				unsigned int absDifference = abs(difference(key.c_str(), localNode.stateTable.leafSet.closestIds[i].nodeId));
+				unsigned int absDifference = abs_difference(key.c_str(), localNode.stateTable.leafSet.closestIds[i].nodeId);
 				if(absDifference < min) {
 					closestNodeIdIndex = i;
 					min = absDifference;
@@ -61,8 +73,7 @@ cell Client::forward(string key) {
 	for(int i = 0; i < L+1; i++) {
 		if(strlen(localNode.stateTable.leafSet.closestIds[i].nodeId) != 0) {
 			sscanf(localNode.stateTable.leafSet.closestIds[i].nodeId, "%x", &cellNodeId);
-			//if(shl(localNode.stateTable.leafSet.closestIds[i].nodeId, key) >= l && (cellNodeId ^ destNodeId) < (localNodeId ^ destNodeId))
-			if(shl(localNode.stateTable.leafSet.closestIds[i].nodeId, key) >= l && abs(int(cellNodeId - destNodeId)) < abs(int(localNodeId - destNodeId)))
+			if(shl(localNode.stateTable.leafSet.closestIds[i].nodeId, key) >= l && abs_difference(cellNodeId, destNodeId) < abs_difference(localNodeId, destNodeId))
 				return localNode.stateTable.leafSet.closestIds[i];
 		}
 	}
@@ -71,8 +82,7 @@ cell Client::forward(string key) {
 		for(int j = 0; j < 16; j++) {
 			if(strlen(localNode.stateTable.routingTable.entries[i][j].nodeId) != 0) {
 				sscanf(localNode.stateTable.routingTable.entries[i][j].nodeId, "%x", &cellNodeId);
-				//if(shl(localNode.stateTable.routingTable.entries[i][j].nodeId, key) >= l && (cellNodeId ^ destNodeId) < (localNodeId ^ destNodeId))
-				if(shl(localNode.stateTable.routingTable.entries[i][j].nodeId, key) >= l && abs(int(cellNodeId - destNodeId)) < abs(int(localNodeId - destNodeId)))
+				if(shl(localNode.stateTable.routingTable.entries[i][j].nodeId, key) >= l && abs_difference(cellNodeId, destNodeId) < abs_difference(localNodeId, destNodeId))
 					return localNode.stateTable.routingTable.entries[i][j];
 			}
 		}
@@ -81,8 +91,7 @@ cell Client::forward(string key) {
 	for(int i = 0; i < M; i++) {
 		if(strlen(localNode.stateTable.neighbourhoodSet.closestNeighbours[i].nodeId) != 0) {
 			sscanf(localNode.stateTable.neighbourhoodSet.closestNeighbours[i].nodeId, "%x", &cellNodeId);
-			//if(shl(localNode.stateTable.neighbourhoodSet.closestNeighbours[i].nodeId, key) >= l && (cellNodeId ^ destNodeId) < (localNodeId ^ destNodeId))
-			if(shl(localNode.stateTable.neighbourhoodSet.closestNeighbours[i].nodeId, key) >= l && abs(int(cellNodeId - destNodeId)) < abs(int(localNodeId - destNodeId)))
+			if(shl(localNode.stateTable.neighbourhoodSet.closestNeighbours[i].nodeId, key) >= l && abs_difference(cellNodeId, destNodeId) < abs_difference(localNodeId, destNodeId))
 				return localNode.stateTable.neighbourhoodSet.closestNeighbours[i];
 		}
 	}

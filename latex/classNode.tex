@@ -15,7 +15,7 @@ Contains information pertaining to a node in pastry network.
 \item 
 int \hyperlink{classNode_a805ce0a14cce97c7a2bd7f1bf4bb85b4}{set\-Node} (string \hyperlink{classNode_a59879ea3bcabb0ea5211dffcfbf49b73}{node\-Ip}, string \hyperlink{classNode_adcf35fc0482227d0b62df69b685b94da}{port})
 \item 
-virtual void \hyperlink{classNode_a252d888f401e1a310cb3d720cf5631a9}{application} (string s)
+virtual void \hyperlink{classNode_a54c977234a0fbfa21c92afcf84fd8b98}{application} (string key, string value, bool value\-Found)
 \end{DoxyCompactItemize}
 \subsection*{Public Attributes}
 \begin{DoxyCompactItemize}
@@ -33,6 +33,8 @@ map$<$ string, string $>$ \hyperlink{classNode_aef05ed03e2d587ae1761c7dc4a1ad213
 int \hyperlink{classNode_a368d0971e95e5481cb17ce82145098bd}{server\-Sock\-Fd}
 \item 
 bool \hyperlink{classNode_ab125f5f050074e2dae467832069b9414}{is\-Node\-Initialized}
+\item 
+bool \hyperlink{classNode_ab2c5c04cb6d0bec23f4dda36dc15710b}{is\-Node\-Joined}
 \end{DoxyCompactItemize}
 
 
@@ -40,13 +42,15 @@ bool \hyperlink{classNode_ab125f5f050074e2dae467832069b9414}{is\-Node\-Initializ
 Contains information pertaining to a node in pastry network. 
 
 \subsection{Member Function Documentation}
-\hypertarget{classNode_a252d888f401e1a310cb3d720cf5631a9}{\index{Node@{Node}!application@{application}}
+\hypertarget{classNode_a54c977234a0fbfa21c92afcf84fd8b98}{\index{Node@{Node}!application@{application}}
 \index{application@{application}!Node@{Node}}
 \subsubsection[{application}]{\setlength{\rightskip}{0pt plus 5cm}void Node\-::application (
 \begin{DoxyParamCaption}
-\item[{string}]{s}
+\item[{string}]{key, }
+\item[{string}]{value, }
+\item[{bool}]{value\-Found}
 \end{DoxyParamCaption}
-)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{classNode_a252d888f401e1a310cb3d720cf5631a9}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{classNode_a54c977234a0fbfa21c92afcf84fd8b98}
 Virtual function. To be defined by application which uses services of pastry. \hypertarget{classNode_a805ce0a14cce97c7a2bd7f1bf4bb85b4}{\index{Node@{Node}!set\-Node@{set\-Node}}
 \index{set\-Node@{set\-Node}!Node@{Node}}
 \subsubsection[{set\-Node}]{\setlength{\rightskip}{0pt plus 5cm}int Node\-::set\-Node (
@@ -64,7 +68,10 @@ Initializes \hyperlink{classNode}{Node} structure.
 Local Hash Table. \hypertarget{classNode_ab125f5f050074e2dae467832069b9414}{\index{Node@{Node}!is\-Node\-Initialized@{is\-Node\-Initialized}}
 \index{is\-Node\-Initialized@{is\-Node\-Initialized}!Node@{Node}}
 \subsubsection[{is\-Node\-Initialized}]{\setlength{\rightskip}{0pt plus 5cm}bool Node\-::is\-Node\-Initialized}}\label{classNode_ab125f5f050074e2dae467832069b9414}
-Check if structure is initialized. \hypertarget{classNode_a709c164657057a32cc79dd7a256ed744}{\index{Node@{Node}!node\-Id@{node\-Id}}
+Check if structure is initialized. \hypertarget{classNode_ab2c5c04cb6d0bec23f4dda36dc15710b}{\index{Node@{Node}!is\-Node\-Joined@{is\-Node\-Joined}}
+\index{is\-Node\-Joined@{is\-Node\-Joined}!Node@{Node}}
+\subsubsection[{is\-Node\-Joined}]{\setlength{\rightskip}{0pt plus 5cm}bool Node\-::is\-Node\-Joined}}\label{classNode_ab2c5c04cb6d0bec23f4dda36dc15710b}
+Check if node is joined to some pastry network. \hypertarget{classNode_a709c164657057a32cc79dd7a256ed744}{\index{Node@{Node}!node\-Id@{node\-Id}}
 \index{node\-Id@{node\-Id}!Node@{Node}}
 \subsubsection[{node\-Id}]{\setlength{\rightskip}{0pt plus 5cm}string Node\-::node\-Id}}\label{classNode_a709c164657057a32cc79dd7a256ed744}
 \hyperlink{classNode}{Node} I\-D of local node. \hypertarget{classNode_a59879ea3bcabb0ea5211dffcfbf49b73}{\index{Node@{Node}!node\-Ip@{node\-Ip}}

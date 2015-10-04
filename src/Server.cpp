@@ -178,7 +178,6 @@ void *communicate(void *arg) {
 		switch(floodCommand->command) {
 		case QUIT:
 			if(localNode.stateTable.purge(floodCommand->arg1)) {
-				localNode.stateTable.print();
 				strcpy(localNode.stateTable.dontAccept, floodCommand->arg1);
 				stateTableManager.repairLeafSet(floodCommand->arg1);
 			}

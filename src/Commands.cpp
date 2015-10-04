@@ -134,10 +134,16 @@ void join(string ip, string port) {
 		return;
 	}
 
+	if(localNode.serverSockFd < 0){
+		cout << "Server is not running." << endl;
+		return;
+	}
+
 	if(localNode.isNodeJoined == true) {
 		cout << "Node is already joined to the pastry network." << endl;
 		return;
 	}
+
 	stateTableManager.joinPhase1(ip, port);
 
 }

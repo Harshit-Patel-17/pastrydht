@@ -163,12 +163,21 @@ void Node::application(string key, string value, bool valueFound) {
 	}
 }
 
-int main(void) {
+int main(int argc, char *argv[]) {
+
+	if(argc > 2) {
+		cout << "Wrong number of arguments." << endl;
+		return -1;
+	}
 
 	//Set up app and Ui
 	string appName = "pastry";
 	string delim = "$";
 	ui.init(appName, delim, GOLD);
+	bool satMode = false;
+
+	if(argc == 2 && strcmp(argv[1], "--sat") == 0)
+		satMode = true;
 
 	int totalArguments;
 	string *arguments;
@@ -290,7 +299,7 @@ int main(void) {
 					cout << "Wrong number of arguments" << endl;
 				}
 			}
-			else if(arguments[0] == "store") {
+			else if(arguments[0] == "store" && satMode) {
 				if(totalArguments == 3) {
 					mode = STORE;
 					satCode = arguments[2];
@@ -301,7 +310,7 @@ int main(void) {
 					cout << "Wrong number of arguments" << endl;
 				}
 			}
-			else if(arguments[0] == "verify") {
+			else if(arguments[0] == "verify" && satMode) {
 				if(totalArguments == 3) {
 					mode = VERIFY;
 					satCode = arguments[2];
@@ -311,7 +320,7 @@ int main(void) {
 					cout << "Wrong number of arguments" << endl;
 				}
 			}
-			else if(arguments[0] == "retv") {
+			else if(arguments[0] == "retv" && satMode) {
 				if(totalArguments == 2) {
 					mode = RETV;
 					retrieve(arguments[1], TOTAL_PARTS);
@@ -320,7 +329,7 @@ int main(void) {
 					cout << "Wrong number of arguments" << endl;
 				}
 			}
-			else if(arguments[0] == "getall") {
+			else if(arguments[0] == "getall" && satMode) {
 				if(totalArguments == 3) {
 					mode = GETALL;
 					getall(arguments[1], arguments[2], TOTAL_PARTS);
@@ -330,7 +339,6 @@ int main(void) {
 				}
 			}
 			else {
-				cout << totalArguments << endl;
 				if(totalArguments > 0)
 					cout << "Command '" << arguments[0] << "' not recognized" << endl;
 			}

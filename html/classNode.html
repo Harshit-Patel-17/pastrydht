@@ -99,8 +99,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a805ce0a14cce97c7a2bd7f1bf4bb85b4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNode.html#a805ce0a14cce97c7a2bd7f1bf4bb85b4">setNode</a> (string <a class="el" href="classNode.html#a59879ea3bcabb0ea5211dffcfbf49b73">nodeIp</a>, string <a class="el" href="classNode.html#adcf35fc0482227d0b62df69b685b94da">port</a>)</td></tr>
 <tr class="separator:a805ce0a14cce97c7a2bd7f1bf4bb85b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a252d888f401e1a310cb3d720cf5631a9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNode.html#a252d888f401e1a310cb3d720cf5631a9">application</a> (string s)</td></tr>
-<tr class="separator:a252d888f401e1a310cb3d720cf5631a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54c977234a0fbfa21c92afcf84fd8b98"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNode.html#a54c977234a0fbfa21c92afcf84fd8b98">application</a> (string key, string value, bool valueFound)</td></tr>
+<tr class="separator:a54c977234a0fbfa21c92afcf84fd8b98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -118,11 +118,13 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a368d0971e95e5481cb17ce82145098bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab125f5f050074e2dae467832069b9414"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNode.html#ab125f5f050074e2dae467832069b9414">isNodeInitialized</a></td></tr>
 <tr class="separator:ab125f5f050074e2dae467832069b9414"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2c5c04cb6d0bec23f4dda36dc15710b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNode.html#ab2c5c04cb6d0bec23f4dda36dc15710b">isNodeJoined</a></td></tr>
+<tr class="separator:ab2c5c04cb6d0bec23f4dda36dc15710b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains information pertaining to a node in pastry network. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a252d888f401e1a310cb3d720cf5631a9"></a>
+<a class="anchor" id="a54c977234a0fbfa21c92afcf84fd8b98"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -133,8 +135,24 @@ Public Attributes</h2></td></tr>
           <td class="memname">void Node::application </td>
           <td>(</td>
           <td class="paramtype">string&#160;</td>
-          <td class="paramname"><em>s</em></td><td>)</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>valueFound</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -198,6 +216,19 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Check if structure is initialized. </p>
+
+</div>
+</div>
+<a class="anchor" id="ab2c5c04cb6d0bec23f4dda36dc15710b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Node::isNodeJoined</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Check if node is joined to some pastry network. </p>
 
 </div>
 </div>
@@ -274,7 +305,7 @@ Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Sep 27 2015 23:16:57 for My Project by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Oct 4 2015 11:23:35 for My Project by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -26,8 +26,8 @@ using namespace std;
 /*! \brief Client class to start communication with peer.
  */
 class Client {
-	unsigned int abs_difference(string hex1, string hex2);
-	unsigned int abs_difference(unsigned int hexNum1, unsigned int hexNum2);
+	unsigned int abs_difference(string hex1, string hex2); /*!< Absolute difference of hex1 and hex2. */
+	unsigned int abs_difference(unsigned int hexNum1, unsigned int hexNum2); /*!< Absolute difference of hexNum1 and hexNum2. */
 public:
 	cell forward(string key); /*!< Find next hop in pastry network based on key. */
 	int send(string ip, string port, string message, string *response); /*!< Send message to peer with given ip and port. */

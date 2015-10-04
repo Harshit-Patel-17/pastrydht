@@ -462,7 +462,6 @@ void *stateTableManagerRunner(void *arg) {
 				stateTableManager.updateLeafSet(QElem);
 				strcpy(localNode.stateTable.dontAccept, "\0");
 				pthread_mutex_unlock(&staccess);
-				localNode.stateTable.print();
 				break;
 
 			case LSET:

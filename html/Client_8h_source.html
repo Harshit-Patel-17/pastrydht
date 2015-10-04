@@ -113,25 +113,27 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">using namespace </span>std;</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
 <div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="classClient.html">   28</a></span>&#160;<span class="keyword">class </span><a class="code" href="classClient.html">Client</a> {</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <a class="code" href="structcell.html">cell</a> forward(<span class="keywordtype">string</span> key); </div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordtype">int</span> send(<span class="keywordtype">string</span> ip, <span class="keywordtype">string</span> port, <span class="keywordtype">string</span> message, <span class="keywordtype">string</span> *response); </div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <a class="code" href="classClient.html">Client</a>();</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classClient.html">Client</a>();</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keywordtype">string</span> send(<span class="keywordtype">string</span> key, <span class="keywordtype">string</span> message, message_type type, <span class="keywordtype">int</span> hopCount = 0); </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordtype">void</span> flood(<span class="keywordtype">string</span> prevKey, <span class="keywordtype">string</span> message); </div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;};</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">extern</span> <a class="code" href="classClient.html">Client</a> client;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> abs_difference(<span class="keywordtype">string</span> hex1, <span class="keywordtype">string</span> hex2); </div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> abs_difference(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> hexNum1, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> hexNum2); </div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <a class="code" href="structcell.html">cell</a> forward(<span class="keywordtype">string</span> key); </div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordtype">int</span> send(<span class="keywordtype">string</span> ip, <span class="keywordtype">string</span> port, <span class="keywordtype">string</span> message, <span class="keywordtype">string</span> *response); </div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <a class="code" href="classClient.html">Client</a>();</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classClient.html">Client</a>();</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordtype">string</span> send(<span class="keywordtype">string</span> key, <span class="keywordtype">string</span> message, message_type type, <span class="keywordtype">int</span> hopCount = 0); </div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keywordtype">void</span> flood(<span class="keywordtype">string</span> prevKey, <span class="keywordtype">string</span> message); </div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;};</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* HEADER_CLIENT_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">extern</span> <a class="code" href="classClient.html">Client</a> client;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* HEADER_CLIENT_H_ */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="structcell_html"><div class="ttname"><a href="structcell.html">cell</a></div><div class="ttdoc">cell of StateTable. </div><div class="ttdef"><b>Definition:</b> StateTable.h:23</div></div>
 <div class="ttc" id="classClient_html"><div class="ttname"><a href="classClient.html">Client</a></div><div class="ttdoc">Client class to start communication with peer. </div><div class="ttdef"><b>Definition:</b> Client.h:28</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Sep 27 2015 23:16:57 for My Project by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Oct 4 2015 11:23:35 for My Project by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

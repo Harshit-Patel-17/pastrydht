@@ -204,6 +204,8 @@ void StateTableManager::repairLeafSet(string purgedNodeId) {
 		if(strlen(minInLeft.nodeId) != 0) {
 			packet.build(localNode.nodeId, minInLeft.nodeId, 0, REPAIR_LSET, message);
 			client.send(minInLeft.ip, minInLeft.port, packet.serialize(), &response);
+		} else {
+			strcpy(localNode.stateTable.dontAccept, "\0");
 		}
 	}
 
@@ -224,6 +226,8 @@ void StateTableManager::repairLeafSet(string purgedNodeId) {
 		if(strlen(maxInRight.nodeId) != 0) {
 			packet.build(localNode.nodeId, maxInRight.nodeId, 0, REPAIR_LSET, message);
 			client.send(maxInRight.ip, maxInRight.port, packet.serialize(), &response);
+		} else {
+			strcpy(localNode.stateTable.dontAccept, "\0");
 		}
 	}
 

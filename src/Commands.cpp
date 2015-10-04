@@ -332,7 +332,11 @@ void quit() {
 		message.push_back(floodCommandString[i]);
 
 	client.flood(localNode.nodeId, message);
+	cout << "Redistribution starts in 5 seconds..." << endl;
+	sleep(5);
+	cout << "Redistributing..." << endl;
 	htManager.redistribute();
+	signal_callback_handler(0);
 
 }
 
